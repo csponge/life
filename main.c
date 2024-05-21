@@ -161,6 +161,7 @@ int main() {
   remainder = 0;
 
   while (1) {
+
     prepare_scene(&app);
 
     do_input(&app);

@@ -1,6 +1,8 @@
 #include "defs.h"
 #include "draw.h"
 #include "structs.h"
+#include <SDL2/SDL_error.h>
+#include <SDL2/SDL_log.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_stdinc.h>
@@ -8,7 +10,7 @@
 
 static void fire_bullet(Stage *stage, Entity *player) {
   SDL_Texture *temp = stage->bulletTail->texture;
-  
+
   Entity *bullet = calloc(1, sizeof(Entity));
   stage->bulletTail->next = bullet;
   stage->bulletTail = bullet;
@@ -47,8 +49,8 @@ static void do_player(App *app, Stage *stage, Entity *player,
 
   if (app->keyboard[SDL_SCANCODE_RIGHT]) {
     player->dx = player->x + player->w + PLAYER_SPEED <= SCREEN_WIDTH
-      ? PLAYER_SPEED
-      : SCREEN_WIDTH - (player->x + player->w);
+                     ? PLAYER_SPEED
+                     : SCREEN_WIDTH - (player->x + player->w);
   }
 
   if (app->keyboard[SDL_SCANCODE_F] && player->reload == 0) {
@@ -101,9 +103,35 @@ static void draw_bullets(App *app, Stage *stage) {
   }
 }
 
+static void draw_rect(App *app) {
+  SDL_Rect dest;
+
+  dest.x = 0;
+  dest.y = 0;
+  dest.w = 32;
+  dest.h = 32;
+
+  if (SDL_RenderDrawRect(app->renderer, &dest) != 0) {
+    SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
+                   "failed to draw rectangle: %s", SDL_GetError());
+  }
+
+  if (SDL_SetRenderDrawColor(app->renderer, 255, 87, 51, SDL_ALPHA_OPAQUE) !=
+      0) {
+    SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
+                   "failed to set the render color: %s", SDL_GetError());
+  }
+
+  if (SDL_RenderFillRect(app->renderer, &dest) != 0) {
+    SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
+                   "failed to color rectangle: %s", SDL_GetError());
+  }
+}
+
 static void draw(App *app, Stage *stage, Entity *player) {
   draw_player(app, player);
   draw_bullets(app, stage);
+  draw_rect(app);
 }
 
 Stage *init_stage(App *app, Entity *player) {

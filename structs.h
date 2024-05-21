@@ -21,13 +21,20 @@ typedef struct Entity {
 } Entity;
 
 typedef struct {
-  Entity fighterHead, *fighterTail;
-  Entity bulletHead, *bulletTail;
+  bool alive;
+  int w;
+  int h;
+  float x;
+  float y;
+} Cell;
+
+typedef struct {
+  Cell **cells;
 } Stage;
 
 typedef struct {
-  void (*logic)(App *app, Stage *stage, Entity *player, SDL_Texture *bullet_texture);
-  void (*draw)(App *app, Stage *stage, Entity *player);
+  void (*logic)(App *app, Stage *stage);
+  void (*draw)(App *app, Stage *stage);
 } Delegate;
 
 struct _App {
