@@ -10,95 +10,92 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#define ROWS 10
-#define COLS 20
-
 #define clear() printf("\033[H\033[J")
 
-void display(char **grid) {
-  for (int row = 0; row < ROWS; row++) {
-    for (int col = 0; col < COLS; col++) {
-      printf("%c", grid[row][col]);
-    }
-    printf("\n");
-  }
-}
+/*void display(char **grid) {*/
+/*  for (int row = 0; row < ROWS; row++) {*/
+/*    for (int col = 0; col < COLS; col++) {*/
+/*      printf("%c", grid[row][col]);*/
+/*    }*/
+/*    printf("\n");*/
+/*  }*/
+/*}*/
 
-char **generate_seed(int rows, int cols) {
-  char **seed = calloc(rows, sizeof(char *));
-  for (int row = 0; row < rows; row++) {
-    seed[row] = calloc(cols, sizeof(char));
-  }
+/*char **generate_seed(int rows, int cols) {*/
+/*  char **seed = calloc(rows, sizeof(char *));*/
+/*  for (int row = 0; row < rows; row++) {*/
+/*    seed[row] = calloc(cols, sizeof(char));*/
+/*  }*/
+/**/
+/*  for (int row = 0; row < ROWS; row++) {*/
+/*    for (int col = 0; col < COLS; col++) {*/
+/*      int isAlive = rand() % (10 + 1);*/
+/**/
+/*      if (isAlive <= 3) {*/
+/*        seed[row][col] = 'O';*/
+/*      } else {*/
+/*        seed[row][col] = ' ';*/
+/*      }*/
+/*    }*/
+/*  }*/
+/**/
+/*  return seed;*/
+/*}*/
 
-  for (int row = 0; row < ROWS; row++) {
-    for (int col = 0; col < COLS; col++) {
-      int isAlive = rand() % (10 + 1);
+/*int count_live_neighbors(char **grid, int row, int col) {*/
+/*  int live_neighbors = 8;*/
+/**/
+/*  // top*/
+/*  if ((row > 0 && col > 0 ? grid[row - 1][col - 1] : ' ') == ' ')*/
+/*    live_neighbors--;*/
+/**/
+/*  if ((row > 0 ? grid[row - 1][col] : ' ') == ' ')*/
+/*    live_neighbors--;*/
+/**/
+/*  if ((row > 0 && col < (COLS - 1) ? grid[row - 1][col + 1] : ' ') == ' ')*/
+/*    live_neighbors--;*/
+/**/
+/*  // middle*/
+/*  if ((col > 0 ? grid[row][col - 1] : ' ') == ' ')*/
+/*    live_neighbors--;*/
+/**/
+/*  if ((col < (COLS - 1) ? grid[row][col + 1] : ' ') == ' ')*/
+/*    live_neighbors--;*/
+/**/
+/*  // bottom*/
+/*  if ((row < (ROWS - 1) && col > 0 ? grid[row + 1][col - 1] : ' ') == ' ')*/
+/*    live_neighbors--;*/
+/**/
+/*  if ((row < (ROWS - 1) ? grid[row + 1][col] : ' ') == ' ')*/
+/*    live_neighbors--;*/
+/**/
+/*  if ((row < (ROWS - 1) && col < (COLS - 1) ? grid[row + 1][col + 1] : ' ') ==*/
+/*      ' ')*/
+/*    live_neighbors--;*/
+/**/
+/*  return live_neighbors;*/
+/*}*/
 
-      if (isAlive <= 3) {
-        seed[row][col] = 'O';
-      } else {
-        seed[row][col] = ' ';
-      }
-    }
-  }
-
-  return seed;
-}
-
-int count_live_neighbors(char **grid, int row, int col) {
-  int live_neighbors = 8;
-
-  // top
-  if ((row > 0 && col > 0 ? grid[row - 1][col - 1] : ' ') == ' ')
-    live_neighbors--;
-
-  if ((row > 0 ? grid[row - 1][col] : ' ') == ' ')
-    live_neighbors--;
-
-  if ((row > 0 && col < (COLS - 1) ? grid[row - 1][col + 1] : ' ') == ' ')
-    live_neighbors--;
-
-  // middle
-  if ((col > 0 ? grid[row][col - 1] : ' ') == ' ')
-    live_neighbors--;
-
-  if ((col < (COLS - 1) ? grid[row][col + 1] : ' ') == ' ')
-    live_neighbors--;
-
-  // bottom
-  if ((row < (ROWS - 1) && col > 0 ? grid[row + 1][col - 1] : ' ') == ' ')
-    live_neighbors--;
-
-  if ((row < (ROWS - 1) ? grid[row + 1][col] : ' ') == ' ')
-    live_neighbors--;
-
-  if ((row < (ROWS - 1) && col < (COLS - 1) ? grid[row + 1][col + 1] : ' ') ==
-      ' ')
-    live_neighbors--;
-
-  return live_neighbors;
-}
-
-void evaluate(char **grid) {
-  for (int row = 0; row < ROWS; row++) {
-    for (int col = 0; col < COLS; col++) {
-      int live_neighbors = count_live_neighbors(grid, row, col);
-
-      // handle dead cells
-      if (grid[row][col] == ' ') {
-        if (live_neighbors == 3) {
-          grid[row][col] = 'O';
-        }
-        continue;
-      }
-
-      // handle alive cells
-      if (live_neighbors < 2 || live_neighbors > 3) {
-        grid[row][col] = ' ';
-      }
-    }
-  }
-}
+/*void evaluate(char **grid) {*/
+/*  for (int row = 0; row < ROWS; row++) {*/
+/*    for (int col = 0; col < COLS; col++) {*/
+/*      int live_neighbors = count_live_neighbors(grid, row, col);*/
+/**/
+/*      // handle dead cells*/
+/*      if (grid[row][col] == ' ') {*/
+/*        if (live_neighbors == 3) {*/
+/*          grid[row][col] = 'O';*/
+/*        }*/
+/*        continue;*/
+/*      }*/
+/**/
+/*      // handle alive cells*/
+/*      if (live_neighbors < 2 || live_neighbors > 3) {*/
+/*        grid[row][col] = ' ';*/
+/*      }*/
+/*    }*/
+/*  }*/
+/*}*/
 
 static void cap_frame_rate(long *then, float *remainder) {
   long wait, frame_time;
@@ -145,17 +142,12 @@ int main() {
 
   App app = init_sdl();
 
-  Entity player;
+  int rows = SCREEN_HEIGHT / 32;
+  int cols = SCREEN_WIDTH / 32;
 
-  /* Entity bullet = { */
-  /*   .texture = load_texture(&app, "gfx/bullet.png"), */
-  /* }; */
+  printf("Running with rows:%d cols:%d\n", rows, cols);
 
-  SDL_Texture *bullet_texture = load_texture(&app, "gfx/bullet.png");
-
-  Stage *stage = init_stage(&app, &player);
-
-  /* get_texture_rect(bullet.texture, &bullet.w, &bullet.h); */
+  Stage *stage = init_stage(&app, rows, cols);
 
   then = SDL_GetTicks();
   remainder = 0;
@@ -166,8 +158,8 @@ int main() {
 
     do_input(&app);
 
-    app.delegate.logic(&app, stage, &player, bullet_texture);
-    app.delegate.draw(&app, stage, &player);
+    app.delegate.logic(&app, stage);
+    app.delegate.draw(&app, stage);
 
     present_scene(&app);
 

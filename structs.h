@@ -2,34 +2,24 @@
 #define STRUCTS_H
 
 #include "defs.h"
+#include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 
 typedef struct _App App;
 
-typedef struct Entity {
-  float x;
-  float y;
-  int w;
-  int h;
-  float dx;
-  float dy;
-  int health;
-  int reload;
-  SDL_Texture *texture;
-  struct Entity *next;
-} Entity;
-
 typedef struct {
   bool alive;
-  int w;
-  int h;
   float x;
   float y;
 } Cell;
 
 typedef struct {
-  Cell **cells;
+  int rows;
+  int cols;
+  int cell_h;
+  int cell_w;
+  Cell ***cells;
 } Stage;
 
 typedef struct {

@@ -3,6 +3,6 @@
 
 #include "structs.h"
 
-Stage *init_stage(App *app, Entity *player);
+Stage *init_stage(App *app, int rows, int cols);
 
 #endif

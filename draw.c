@@ -5,7 +5,7 @@
 #include <SDL2/SDL_render.h>
 
 void prepare_scene(App *app) {
-  SDL_SetRenderDrawColor(app->renderer, 96, 128, 255, 255);
+  SDL_SetRenderDrawColor(app->renderer, 255, 255, 238, 255);
   SDL_RenderClear(app->renderer);
 }
 
