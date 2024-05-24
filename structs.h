@@ -23,7 +23,7 @@ typedef struct {
 } Stage;
 
 typedef struct {
-  void (*logic)(App *app, Stage *stage);
+  void (*logic)(Stage *stage);
   void (*draw)(App *app, Stage *stage);
 } Delegate;
 

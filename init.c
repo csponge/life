@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-App init_sdl(void) {
+App *init_app(void) {
   int render_flags, window_flags;
 
   render_flags = SDL_RENDERER_ACCELERATED;
@@ -20,28 +20,36 @@ App init_sdl(void) {
     exit(1);
   }
 
-  App app = {.window = SDL_CreateWindow("Life", SDL_WINDOWPOS_UNDEFINED,
-                                        SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
-                                        SCREEN_HEIGHT, window_flags)};
+  App *app = calloc(1, sizeof(App));
+  if (app == NULL) {
+    printf("Couldn't allocate app\n");
+    return NULL;
+  }
 
-  if (!app.window) {
+  app->window = SDL_CreateWindow("Life", SDL_WINDOWPOS_UNDEFINED,
+                                        SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
+                                        SCREEN_HEIGHT, window_flags);
+
+  if (!app->window) {
     printf("Failed to open %d x %d window: %s\n", SCREEN_WIDTH, SCREEN_HEIGHT, SDL_GetError());
     exit(1);
   }
 
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 
-  app.renderer = SDL_CreateRenderer(app.window, -1, render_flags);
+  app->renderer = SDL_CreateRenderer(app->window, -1, render_flags);
 
-  if (!app.renderer) {
+  if (!app->renderer) {
     printf("Failed to create renderer: %s\n", SDL_GetError());
     exit(1);
   }
 
-  if (IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG) == 0) {
-    printf("Couldn't initialize SDL Image library: %s\n", SDL_GetError());
-    exit(1);
-  }
-
   return app;
+}
+
+void free_app(App *app) {
+  SDL_DestroyRenderer(app->renderer);
+  SDL_DestroyWindow(app->window);
+  free(app);
+  SDL_Quit();
 }

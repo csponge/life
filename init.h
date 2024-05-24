@@ -3,6 +3,7 @@
 
 #include "structs.h"
 
-App init_sdl(void);
+App *init_app(void);
+void free_app(App *app);
 
 #endif

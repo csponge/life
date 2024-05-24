@@ -1,5 +1,3 @@
-#include "defs.h"
-#include "draw.h"
 #include "structs.h"
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_log.h>
@@ -7,45 +5,70 @@
 #include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_stdinc.h>
 #include <stdbool.h>
-#include <stdio.h>
 #include <stdlib.h>
 
-/*static void do_player(App *app, Stage *stage, Entity *player,*/
-/*                      SDL_Texture *bullet_texture) {*/
-/*  player->dx = player->dy = 0;*/
-/**/
-/*  if (player->reload > 0) {*/
-/*    player->reload--;*/
-/*  }*/
-/**/
-/*  if (app->keyboard[SDL_SCANCODE_UP]) {*/
-/*    player->dy = player->y - PLAYER_SPEED >= 0 ? -PLAYER_SPEED : -player->y;*/
-/*  }*/
-/**/
-/*  if (app->keyboard[SDL_SCANCODE_DOWN]) {*/
-/*    player->dy = player->y + player->h + PLAYER_SPEED <= SCREEN_HEIGHT*/
-/*                     ? PLAYER_SPEED*/
-/*                     : SCREEN_HEIGHT - (player->y + player->h);*/
-/*  }*/
-/**/
-/*  if (app->keyboard[SDL_SCANCODE_LEFT]) {*/
-/*    player->dx = player->x - PLAYER_SPEED >= 0 ? -PLAYER_SPEED : -player->x;*/
-/*  }*/
-/**/
-/*  if (app->keyboard[SDL_SCANCODE_RIGHT]) {*/
-/*    player->dx = player->x + player->w + PLAYER_SPEED <= SCREEN_WIDTH*/
-/*                     ? PLAYER_SPEED*/
-/*                     : SCREEN_WIDTH - (player->x + player->w);*/
-/*  }*/
-/**/
-/*  if (app->keyboard[SDL_SCANCODE_F] && player->reload == 0) {*/
-/*  }*/
-/**/
-/*  player->x += player->dx;*/
-/*  player->y += player->dy;*/
-/*}*/
+int count_live_neighbors(Stage *stage, int row, int col) {
+  int live_neighbors = 8;
 
-void logic(App *app, Stage *stage) {}
+  // top
+  if ((row > 0 && col > 0 ? stage->cells[row - 1][col - 1]->alive : false) ==
+      false)
+    live_neighbors--;
+
+  if ((row > 0 ? stage->cells[row - 1][col]->alive : false) == false)
+    live_neighbors--;
+
+  if ((row > 0 && col < (stage->cols - 1)
+           ? stage->cells[row - 1][col + 1]->alive
+           : false) == false)
+    live_neighbors--;
+
+  // middle
+  if ((col > 0 ? stage->cells[row][col - 1]->alive : false) == false)
+    live_neighbors--;
+
+  if ((col < (stage->cols - 1) ? stage->cells[row][col + 1]->alive : false) ==
+      false)
+    live_neighbors--;
+
+  // bottom
+  if ((row < (stage->rows - 1) && col > 0
+           ? stage->cells[row + 1][col - 1]->alive
+           : false) == false)
+    live_neighbors--;
+
+  if ((row < (stage->rows - 1) ? stage->cells[row + 1][col]->alive : false) ==
+      false)
+    live_neighbors--;
+
+  if ((row < (stage->rows - 1) && col < (stage->cols - 1)
+           ? stage->cells[row + 1][col + 1]->alive
+           : false) == false)
+    live_neighbors--;
+
+  return live_neighbors;
+}
+
+void logic(Stage *stage) {
+  for (int row = 0; row < stage->rows; row++) {
+    for (int col = 0; col < stage->cols; col++) {
+      int live_neighbors = count_live_neighbors(stage, row, col);
+
+      // handle dead cells
+      if (stage->cells[row][col]->alive == false) {
+        if (live_neighbors == 3) {
+          stage->cells[row][col]->alive = true;
+        }
+        continue;
+      }
+
+      // handle alive cells
+      if (live_neighbors < 2 || live_neighbors > 3) {
+        stage->cells[row][col]->alive = false;
+      }
+    }
+  }
+}
 
 void draw_cell(App *app, Cell *cell, int w, int h) {
   SDL_Rect dest;
@@ -123,11 +146,24 @@ Stage *init_stage(App *app, int rows, int cols) {
   app->delegate.draw = draw;
 
   Stage *stage = calloc(1, sizeof(Stage));
-  stage->cell_w = 32;
-  stage->cell_h = 32;
+  stage->cell_w = CELL;
+  stage->cell_h = CELL;
   stage->rows = rows;
   stage->cols = cols;
   stage->cells = generate_seed(rows, cols);
 
   return stage;
 }
+
+void free_stage(Stage *stage) {
+  for (int row = 0; row < stage->rows; row++) {
+    for (int col = 0; col < stage->cols; col++) {
+      free(stage->cells[row][col]);
+      stage->cells[row][col] = NULL;
+    }
+  }
+
+  free(stage);
+  stage = NULL;
+}
+
