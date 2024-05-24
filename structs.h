@@ -2,9 +2,9 @@
 #define STRUCTS_H
 
 #include "defs.h"
-#include <stdbool.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
+#include <stdbool.h>
 
 typedef struct _App App;
 
@@ -23,15 +23,24 @@ typedef struct {
 } Stage;
 
 typedef struct {
-  void (*logic)(Stage *stage);
+  void (*logic)(App *app, Stage *stage);
   void (*draw)(App *app, Stage *stage);
+  void (*mouse_click)(App *app, Stage *stage);
 } Delegate;
 
+typedef struct {
+  bool clicked;
+  int x;
+  int y;
+} Mouse;
+
 struct _App {
+  bool run;
   SDL_Renderer *renderer;
   SDL_Window *window;
   Delegate delegate;
   int keyboard[MAX_KEYBOAD_KEYS];
+  Mouse mouse;
 };
 
 #endif

@@ -16,7 +16,7 @@ static void cap_frame_rate(long *then, float *remainder) {
 
   *remainder -= (int)*remainder;
 
-  frame_time = SDL_GetTicks() - *then;
+  frame_time = SDL_GetTicks64() - *then;
 
   wait -= frame_time;
 
@@ -52,8 +52,9 @@ int main() {
     prepare_scene(app);
 
     do_input(app);
-
-    app->delegate.logic(stage);
+    
+    app->delegate.mouse_click(app, stage);
+    app->delegate.logic(app, stage);
     app->delegate.draw(app, stage);
 
     present_scene(app);

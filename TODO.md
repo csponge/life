@@ -5,7 +5,7 @@
     [x] figure out how to fill whole window
     [ ] figure out how to either fit perfect or make 
         grid span forever
-[ ] make grid clickable
+[x] make grid clickable
 [ ] play/pause buttons
 [ ] generation counter
-
+[ ] Slow down frames

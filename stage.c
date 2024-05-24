@@ -7,6 +7,34 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+Cell ***initialize_cells(int rows, int cols) {
+  Cell ***cells = calloc(rows, sizeof(Cell *));
+  for (int row = 0; row < rows; row++) {
+    cells[row] = calloc(cols, sizeof(Cell *));
+  }
+
+  for (int row = 0; row < rows; row++) {
+    for (int col = 0; col < cols; col++) {
+      cells[row][col] = (Cell *)calloc(1, sizeof(Cell));
+      cells[row][col]->alive = false;
+    }
+  }
+
+  return cells;
+}
+
+void free_cells(Cell ***cells, int rows, int cols) {
+  for (int row = 0; row < rows; row++) {
+    for (int col = 0; col < cols; col++) {
+      free(cells[row][col]);
+      cells[row][col] = NULL;
+    }
+  }
+
+  free(cells);
+  cells = NULL;
+}
+
 int count_live_neighbors(Stage *stage, int row, int col) {
   int live_neighbors = 8;
 
@@ -49,7 +77,12 @@ int count_live_neighbors(Stage *stage, int row, int col) {
   return live_neighbors;
 }
 
-void logic(Stage *stage) {
+void logic(App *app, Stage *stage) {
+  if (app->run == false)
+    return;
+
+  Cell ***new_cells = initialize_cells(stage->rows, stage->cols);
+
   for (int row = 0; row < stage->rows; row++) {
     for (int col = 0; col < stage->cols; col++) {
       int live_neighbors = count_live_neighbors(stage, row, col);
@@ -57,17 +90,22 @@ void logic(Stage *stage) {
       // handle dead cells
       if (stage->cells[row][col]->alive == false) {
         if (live_neighbors == 3) {
-          stage->cells[row][col]->alive = true;
+          new_cells[row][col]->alive = true;
         }
         continue;
       }
 
       // handle alive cells
       if (live_neighbors < 2 || live_neighbors > 3) {
-        stage->cells[row][col]->alive = false;
+        new_cells[row][col]->alive = false;
+      } else {
+        new_cells[row][col]->alive = true;
       }
     }
   }
+
+  free_cells(stage->cells, stage->rows, stage->cols);
+  stage->cells = new_cells;
 }
 
 void draw_cell(App *app, Cell *cell, int w, int h) {
@@ -119,51 +157,74 @@ void draw_cells(App *app, Stage *stage) {
 
 void draw(App *app, Stage *stage) { draw_cells(app, stage); }
 
-Cell ***generate_seed(int rows, int cols) {
-  Cell ***seed = calloc(rows, sizeof(Cell *));
-  for (int row = 0; row < rows; row++) {
-    seed[row] = calloc(cols, sizeof(Cell *));
-  }
+void mouse_click(App *app, Stage *stage) {
+  if (app->mouse.clicked == false) 
+    return;
 
-  for (int row = 0; row < rows; row++) {
-    for (int col = 0; col < cols; col++) {
-      int isAlive = rand() % (10 + 1);
+  int x = app->mouse.x;
+  int y = app->mouse.y;
+  int found_row = -1;
+  int found_col = -1;
 
-      seed[row][col] = (Cell *)calloc(1, sizeof(Cell));
-      if (isAlive <= 3) {
-        seed[row][col]->alive = true;
-      } else {
-        seed[row][col]->alive = false;
-      }
+  // get row
+  for (int row = 0; row < stage->rows; row++) {
+    int spix = row * CELL;
+    int epix = spix + CELL;
+
+    if (y > spix && y < epix) {
+      found_row = row;
+      break;
     }
   }
 
-  return seed;
+  // get col
+  for (int col = 0; col < stage->cols; col++) {
+    int spix = col * CELL;
+    int epix = spix + CELL;
+
+    if (x > spix && x < epix) {
+      found_col = col;
+      break;
+    }
+  }
+
+  if (found_col != -1 && found_row != -1) {
+    stage->cells[found_row][found_col]->alive = true;
+  }
+}
+
+void seed(Stage *stage) {
+  for (int row = 0; row < stage->rows; row++) {
+    for (int col = 0; col < stage->cols; col++) {
+      int isAlive = rand() % (10 + 1);
+
+      stage->cells[row][col] = (Cell *)calloc(1, sizeof(Cell));
+      if (isAlive <= 1) {
+        stage->cells[row][col]->alive = true;
+      } else {
+        stage->cells[row][col]->alive = false;
+      }
+    }
+  }
 }
 
 Stage *init_stage(App *app, int rows, int cols) {
   app->delegate.logic = logic;
   app->delegate.draw = draw;
+  app->delegate.mouse_click = mouse_click;
 
   Stage *stage = calloc(1, sizeof(Stage));
   stage->cell_w = CELL;
   stage->cell_h = CELL;
   stage->rows = rows;
   stage->cols = cols;
-  stage->cells = generate_seed(rows, cols);
+  stage->cells = initialize_cells(rows, cols);
 
   return stage;
 }
 
 void free_stage(Stage *stage) {
-  for (int row = 0; row < stage->rows; row++) {
-    for (int col = 0; col < stage->cols; col++) {
-      free(stage->cells[row][col]);
-      stage->cells[row][col] = NULL;
-    }
-  }
-
+  free_cells(stage->cells, stage->rows, stage->cols);
   free(stage);
   stage = NULL;
 }
-
