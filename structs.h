@@ -3,6 +3,7 @@
 
 #include "defs.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_render.h>
 #include <stdbool.h>
 
@@ -15,11 +16,30 @@ typedef struct {
 } Cell;
 
 typedef struct {
+  float x;
+  float y;
+  int w;
+  int h;
+  char *text;
+} Button;
+
+typedef struct {
+  Button *play_button;
+} Toolbar;
+
+typedef struct {
+  float x;
+  float y;
   int rows;
   int cols;
   int cell_h;
   int cell_w;
   Cell ***cells;
+} CellGrid;
+
+typedef struct {
+  Toolbar toolbar;
+  CellGrid grid;
 } Stage;
 
 typedef struct {
@@ -37,6 +57,7 @@ typedef struct {
 struct _App {
   bool run;
   SDL_Renderer *renderer;
+  TTF_Font *font;
   SDL_Window *window;
   Delegate delegate;
   int keyboard[MAX_KEYBOAD_KEYS];
