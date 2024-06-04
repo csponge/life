@@ -55,8 +55,9 @@ int count_live_neighbors(Stage *stage, int row, int col) {
 	if ((col > 0 ? stage->grid.cells[row][col - 1]->alive : false) == false)
 		live_neighbors--;
 
-	if ((col < (stage->grid.cols - 1) ? stage->grid.cells[row][col + 1]->alive
-	                             : false) == false)
+	if ((col < (stage->grid.cols - 1)
+	         ? stage->grid.cells[row][col + 1]->alive
+	         : false) == false)
 		live_neighbors--;
 
 	// bottom
@@ -65,8 +66,9 @@ int count_live_neighbors(Stage *stage, int row, int col) {
 	         : false) == false)
 		live_neighbors--;
 
-	if ((row < (stage->grid.rows - 1) ? stage->grid.cells[row + 1][col]->alive
-	                             : false) == false)
+	if ((row < (stage->grid.rows - 1)
+	         ? stage->grid.cells[row + 1][col]->alive
+	         : false) == false)
 		live_neighbors--;
 
 	if ((row < (stage->grid.rows - 1) && col < (stage->grid.cols - 1)
@@ -81,7 +83,8 @@ void logic(App *app, Stage *stage) {
 	if (app->run == false)
 		return;
 
-	Cell ***new_cells = initialize_cells(stage->grid.rows, stage->grid.cols);
+	Cell ***new_cells =
+	    initialize_cells(stage->grid.rows, stage->grid.cols);
 
 	for (int row = 0; row < stage->grid.rows; row++) {
 		for (int col = 0; col < stage->grid.cols; col++) {
@@ -143,18 +146,39 @@ void draw_cell(App *app, Cell *cell, int w, int h) {
 }
 
 void draw_toolbar(App *app, Toolbar *toolbar) {
-  SDL_Rect dest;
+	SDL_Rect dest;
 
-  dest.x = toolbar->play_button->x;
-  dest.y = toolbar->play_button->y;
-  dest.w = toolbar->play_button->w;
-  dest.h = toolbar->play_button->h;
+	dest.x = toolbar->play_button->x;
+	dest.y = toolbar->play_button->y;
+	dest.w = toolbar->play_button->w;
+	dest.h = toolbar->play_button->h;
 
-  if (SDL_RenderDrawRect(app->renderer, &dest) != 0) {
+	if (SDL_RenderDrawRect(app->renderer, &dest) != 0) {
 		SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
 		               SDL_LOG_PRIORITY_ERROR,
 		               "failed to draw button: %s", SDL_GetError());
-  }
+        return;
+	}
+
+	SDL_Surface *text = NULL;
+	SDL_Color forecol = {0x00, 0x00, 0x00, 0};
+	SDL_Color backcol = {0xFF, 0xFF, 0xFF, 0};
+
+	text = TTF_RenderUTF8_Solid(app->font, toolbar->play_button->text,
+	                            forecol);
+
+    if (text == NULL) {
+        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
+                        SDL_LOG_PRIORITY_ERROR,
+                        "failed to get rendered text: %s\n", SDL_GetError());
+        return;
+    }
+
+	toolbar->play_button->texture =
+	    SDL_CreateTextureFromSurface(app->renderer, text);
+
+	SDL_RenderCopy(app->renderer, toolbar->play_button->texture, NULL,
+	               &dest);
 }
 
 void draw_cells(App *app, CellGrid *grid) {
@@ -177,8 +201,8 @@ void draw_cells(App *app, CellGrid *grid) {
 }
 
 void draw(App *app, Stage *stage) { 
-
-  draw_cells(app, &stage->grid); 
+    draw_cells(app, &stage->grid); 
+    draw_toolbar(app, &stage->toolbar);
 }
 
 void mouse_click(App *app, Stage *stage) {
@@ -245,13 +269,13 @@ Stage *init_stage(App *app, int rows, int cols) {
 	stage->grid.cols = cols;
 	stage->grid.cells = initialize_cells(rows, cols);
 
-  Button *play = calloc(1, sizeof(Button));
-  play->x = 10;
-  play->y = 10;
-  play->w = 40;
-  play->h = 20;
-  play->text = "Play";
-  stage->toolbar.play_button = calloc(1, sizeof(Button));
+	Button *play = calloc(1, sizeof(Button));
+	play->x = 10;
+	play->y = 10;
+	play->w = 80;
+	play->h = 40;
+	play->text = "Play";
+	stage->toolbar.play_button = play;
 
 	return stage;
 }
