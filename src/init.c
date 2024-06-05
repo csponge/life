@@ -57,6 +57,9 @@ App *init_app(void) {
 		exit(1);
 	}
 
+    int renderStyle = TTF_STYLE_NORMAL;
+    TTF_SetFontStyle(app->font, renderStyle);
+
 	return app;
 }
 

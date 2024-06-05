@@ -157,7 +157,7 @@ void draw_toolbar(App *app, Toolbar *toolbar) {
 		SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
 		               SDL_LOG_PRIORITY_ERROR,
 		               "failed to draw button: %s", SDL_GetError());
-        return;
+		return;
 	}
 
 	SDL_Surface *text = NULL;
@@ -167,12 +167,12 @@ void draw_toolbar(App *app, Toolbar *toolbar) {
 	text = TTF_RenderUTF8_Solid(app->font, toolbar->play_button->text,
 	                            forecol);
 
-    if (text == NULL) {
-        SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
-                        SDL_LOG_PRIORITY_ERROR,
-                        "failed to get rendered text: %s\n", SDL_GetError());
-        return;
-    }
+	if (text == NULL) {
+		SDL_LogMessage(
+		    SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
+		    "failed to get rendered text: %s\n", SDL_GetError());
+		return;
+	}
 
 	toolbar->play_button->texture =
 	    SDL_CreateTextureFromSurface(app->renderer, text);
@@ -182,8 +182,8 @@ void draw_toolbar(App *app, Toolbar *toolbar) {
 }
 
 void draw_cells(App *app, CellGrid *grid) {
-	int x = 0;
-	int y = 0;
+	int x = grid->x;
+	int y = grid->y;
 
 	for (int row = 0; row < grid->rows; row++) {
 		for (int col = 0; col < grid->cols; col++) {
@@ -200,9 +200,9 @@ void draw_cells(App *app, CellGrid *grid) {
 	}
 }
 
-void draw(App *app, Stage *stage) { 
-    draw_cells(app, &stage->grid); 
-    draw_toolbar(app, &stage->toolbar);
+void draw(App *app, Stage *stage) {
+	draw_cells(app, &stage->grid);
+	draw_toolbar(app, &stage->toolbar);
 }
 
 void mouse_click(App *app, Stage *stage) {
@@ -214,9 +214,16 @@ void mouse_click(App *app, Stage *stage) {
 	int found_row = -1;
 	int found_col = -1;
 
+	// check if play pressed
+	Button *play = stage->toolbar.play_button;
+	if (x > play->x && x < (play->x + play->w) && y > play->y &&
+	    y < (play->y + play->h)) {
+        app->run = true;
+	}
+
 	// get row
 	for (int row = 0; row < stage->grid.rows; row++) {
-		int spix = row * CELL;
+		int spix = stage->grid.y + (row * CELL);
 		int epix = spix + CELL;
 
 		if (y > spix && y < epix) {
@@ -227,7 +234,7 @@ void mouse_click(App *app, Stage *stage) {
 
 	// get col
 	for (int col = 0; col < stage->grid.cols; col++) {
-		int spix = col * CELL;
+		int spix = (col * CELL);
 		int epix = spix + CELL;
 
 		if (x > spix && x < epix) {
@@ -263,6 +270,8 @@ Stage *init_stage(App *app, int rows, int cols) {
 	app->delegate.mouse_click = mouse_click;
 
 	Stage *stage = calloc(1, sizeof(Stage));
+	stage->grid.x = 0;
+	stage->grid.y = 80;
 	stage->grid.cell_w = CELL;
 	stage->grid.cell_h = CELL;
 	stage->grid.rows = rows;
