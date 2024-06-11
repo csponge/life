@@ -14,3 +14,13 @@
 [ ] play/pause buttons
 [ ] generation counter
 [ ] Slow down frames
+
+# GUI System
+I want to make it easier to draw buttons and other gui elements. 
+
+How am I going to do that?
+- Everything is essentially a rectangle
+- A stage should have a collection of gui elements
+- each gui element should have some rendering logic associated with it
+- I can loop through each gui element and call it's draw function
+- Each element should be able to tell if it was clicked

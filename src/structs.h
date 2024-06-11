@@ -2,6 +2,7 @@
 #define STRUCTS_H
 
 #include "defs.h"
+#include "gui.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_ttf.h>
@@ -15,16 +16,20 @@ typedef struct {
 	float y;
 } Cell;
 
-typedef struct {
-	float x;
-	float y;
-	int w;
-	int h;
-	char *text;
-    SDL_Texture *texture;
-} Button;
+/*typedef struct {*/
+/*	float x;*/
+/*	float y;*/
+/*	int w;*/
+/*	int h;*/
+/*	char *text;*/
+/*    SDL_Texture *texture;*/
+/*} Button;*/
 
 typedef struct {
+    float x;
+    float y;
+    int w;
+    int h;
 	Button *play_button;
 } Toolbar;
 
@@ -39,8 +44,10 @@ typedef struct {
 } CellGrid;
 
 typedef struct {
-	Toolbar toolbar;
-	CellGrid grid;
+    size_t num_elements;
+    GuiElement **elements;
+	/*Toolbar toolbar;*/
+	/*CellGrid grid;*/
 } Stage;
 
 typedef struct {

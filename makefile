@@ -1,20 +1,23 @@
-life : main.o stage.o input.o init.o draw.o
-	cc -lSDL2 -lSDL2_image -lSDL2_ttf -o ./build/life ./build/main.o ./build/stage.o ./build/input.o ./build/init.o ./build/draw.o
+life : main.o stage.o gui.o input.o init.o draw.o
+	cc -lSDL2 -lSDL2_image -lSDL2_ttf -o ./build/life ./build/main.o ./build/stage.o ./build/gui.o ./build/input.o ./build/init.o ./build/draw.o
 
 main.o : ./src/main.c 
-	cc -c ./src/main.c -o ./build/main.o
+	cc -g -c ./src/main.c -o ./build/main.o
 
 stage.o : ./src/stage.c
-	cc -c ./src/stage.c -o ./build/stage.o
+	cc -g -c ./src/stage.c -o ./build/stage.o
+
+gui.o : ./src/gui.c
+	cc -g -c ./src/gui.c -o ./build/gui.o
 
 input.o : ./src/input.c
-	cc -c ./src/input.c -o ./build/input.o
+	cc -g -c ./src/input.c -o ./build/input.o
 
 init.o : ./src/init.c
-	cc -c ./src/init.c -o ./build/init.o
+	cc -g -c ./src/init.c -o ./build/init.o
 
 draw.o : ./src/draw.c
-	cc -c ./src/draw.c -o ./build/draw.o
+	cc -g -c ./src/draw.c -o ./build/draw.o
 
 clean : 
 	rm ./build/*
