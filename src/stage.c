@@ -23,17 +23,17 @@ Cell ***initialize_cells(int rows, int cols) {
 	return cells;
 }
 
-void free_cells(Cell ***cells, int rows, int cols) {
-	for (int row = 0; row < rows; row++) {
-		for (int col = 0; col < cols; col++) {
-			free(cells[row][col]);
-			cells[row][col] = NULL;
-		}
-	}
-
-	free(cells);
-	cells = NULL;
-}
+/*void free_cells(Cell ***cells, int rows, int cols) {*/
+/*	for (int row = 0; row < rows; row++) {*/
+/*		for (int col = 0; col < cols; col++) {*/
+/*			free(cells[row][col]);*/
+/*			cells[row][col] = NULL;*/
+/*		}*/
+/*	}*/
+/**/
+/*	free(cells);*/
+/*	cells = NULL;*/
+/*}*/
 
 /*int count_live_neighbors(Stage *stage, int row, int col) {*/
 /*	int live_neighbors = 8;*/
@@ -114,38 +114,38 @@ void free_cells(Cell ***cells, int rows, int cols) {
 /*	stage->grid.cells = new_cells;*/
 /*}*/
 
-void draw_cell(App *app, Cell *cell, int w, int h) {
-	SDL_Rect dest;
-
-	dest.x = cell->x;
-	dest.y = cell->y;
-	dest.w = w;
-	dest.h = h;
-
-	// set the render color for all cells
-	if (SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE) !=
-	    0) {
-		SDL_LogMessage(
-		    SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
-		    "failed to set the render color: %s", SDL_GetError());
-	}
-
-	if (SDL_RenderDrawRect(app->renderer, &dest) != 0) {
-		SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
-		               SDL_LOG_PRIORITY_ERROR,
-		               "failed to draw rectangle: %s", SDL_GetError());
-	}
-
-	// only alive cells should be filled in
-	if (cell->alive == true) {
-		if (SDL_RenderFillRect(app->renderer, &dest) != 0) {
-			SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
-			               SDL_LOG_PRIORITY_ERROR,
-			               "failed to color rectangle: %s",
-			               SDL_GetError());
-		}
-	}
-}
+/*void draw_cell(App *app, Cell *cell, int w, int h) {*/
+/*	SDL_Rect dest;*/
+/**/
+/*	dest.x = cell->x;*/
+/*	dest.y = cell->y;*/
+/*	dest.w = w;*/
+/*	dest.h = h;*/
+/**/
+/*	// set the render color for all cells*/
+/*	if (SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE) !=*/
+/*	    0) {*/
+/*		SDL_LogMessage(*/
+/*		    SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,*/
+/*		    "failed to set the render color: %s", SDL_GetError());*/
+/*	}*/
+/**/
+/*	if (SDL_RenderDrawRect(app->renderer, &dest) != 0) {*/
+/*		SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,*/
+/*		               SDL_LOG_PRIORITY_ERROR,*/
+/*		               "failed to draw rectangle: %s", SDL_GetError());*/
+/*	}*/
+/**/
+/*	// only alive cells should be filled in*/
+/*	if (cell->alive == true) {*/
+/*		if (SDL_RenderFillRect(app->renderer, &dest) != 0) {*/
+/*			SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,*/
+/*			               SDL_LOG_PRIORITY_ERROR,*/
+/*			               "failed to color rectangle: %s",*/
+/*			               SDL_GetError());*/
+/*		}*/
+/*	}*/
+/*}*/
 
 /*void draw_toolbar(App *app, Toolbar *toolbar) {*/
 /*	SDL_Rect dest;*/
@@ -183,24 +183,24 @@ void draw_cell(App *app, Cell *cell, int w, int h) {
 /*	               &dest);*/
 /*}*/
 
-void draw_cells(App *app, CellGrid *grid) {
-	int x = grid->x;
-	int y = grid->y;
-
-	for (int row = 0; row < grid->rows; row++) {
-		for (int col = 0; col < grid->cols; col++) {
-			Cell *cell = grid->cells[row][col];
-			cell->x = x;
-			cell->y = y;
-
-			draw_cell(app, cell, grid->cell_h, grid->cell_w);
-
-			x += grid->cell_w;
-		}
-		y += grid->cell_h;
-		x = 0;
-	}
-}
+/*void draw_cells(App *app, CellGrid *grid) {*/
+/*	int x = grid->x;*/
+/*	int y = grid->y;*/
+/**/
+/*	for (int row = 0; row < grid->rows; row++) {*/
+/*		for (int col = 0; col < grid->cols; col++) {*/
+/*			Cell *cell = grid->cells[row][col];*/
+/*			cell->x = x;*/
+/*			cell->y = y;*/
+/**/
+/*			draw_cell(app, cell, grid->cell_h, grid->cell_w);*/
+/**/
+/*			x += grid->cell_w;*/
+/*		}*/
+/*		y += grid->cell_h;*/
+/*		x = 0;*/
+/*	}*/
+/*}*/
 
 void draw(App *app, Stage *stage) {
     DrawInfo info = {.renderer = app->renderer, .font = app->font};
@@ -286,32 +286,15 @@ Stage *init_stage(App *app, int rows, int cols) {
     stage->elements = calloc(2, sizeof(GuiElement *));
 
 	// Create play button
-	GuiElement *play = new_button(10, 10, 40, 20);
+	GuiElement *play = new_button(10, 10);
     button_set_text((Button *)play->element, "Play", 4);
 
 	// assign gui element
     add_elem_to_stage(stage, play);
 
-	/*   stage->toolbar.x = 0;*/
-	/*   stage->toolbar.y = 0;*/
-	/*   stage->toolbar.w = SCREEN_WIDTH;*/
-	/*   stage->toolbar.h = 50;*/
-	/**/
-	/*Button *play = calloc(1, sizeof(Button));*/
-	/*play->x = 10;*/
-	/*play->y = 10;*/
-	/*play->w = 40;*/
-	/*play->h = 20;*/
-	/*play->text = "Play";*/
-	/*stage->toolbar.play_button = play;*/
-	/**/
-	/*stage->grid.x = 0;*/
-	/*stage->grid.y = 60;*/
-	/*stage->grid.cell_w = CELL;*/
-	/*stage->grid.cell_h = CELL;*/
-	/*stage->grid.rows = rows;*/
-	/*stage->grid.cols = cols;*/
-	/*stage->grid.cells = initialize_cells(rows, cols);*/
+    // Create grid
+    GuiElement *grid = new_cell_grid(rows, cols, 0, 60);
+    add_elem_to_stage(stage, grid);
 
 	return stage;
 }

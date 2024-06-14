@@ -51,7 +51,7 @@ App *init_app(void) {
 		exit(1);
 	}
 
-	app->font = TTF_OpenFont("fonts/OpenSans-Regular.ttf", 12);
+	app->font = TTF_OpenFont("fonts/OpenSans-Regular.ttf", 24);
 	if (app->font == NULL) {
 		printf("Failed to load TTF font: %s\n", SDL_GetError());
 		exit(1);
@@ -59,6 +59,7 @@ App *init_app(void) {
 
     int renderStyle = TTF_STYLE_NORMAL;
     TTF_SetFontStyle(app->font, renderStyle);
+    TTF_SetFontHinting(app->font, TTF_HINTING_MONO);
 
 	return app;
 }

@@ -24,3 +24,4 @@ How am I going to do that?
 - each gui element should have some rendering logic associated with it
 - I can loop through each gui element and call it's draw function
 - Each element should be able to tell if it was clicked
+- I need to figure out how to render the text properly

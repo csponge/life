@@ -10,11 +10,11 @@
 
 typedef struct _App App;
 
-typedef struct {
-	bool alive;
-	float x;
-	float y;
-} Cell;
+/*typedef struct {*/
+/*	bool alive;*/
+/*	float x;*/
+/*	float y;*/
+/*} Cell;*/
 
 /*typedef struct {*/
 /*	float x;*/
@@ -25,23 +25,23 @@ typedef struct {
 /*    SDL_Texture *texture;*/
 /*} Button;*/
 
-typedef struct {
-    float x;
-    float y;
-    int w;
-    int h;
-	Button *play_button;
-} Toolbar;
+/*typedef struct {*/
+/*    float x;*/
+/*    float y;*/
+/*    int w;*/
+/*    int h;*/
+/*	Button *play_button;*/
+/*} Toolbar;*/
 
-typedef struct {
-	float x;
-	float y;
-	int rows;
-	int cols;
-	int cell_h;
-	int cell_w;
-	Cell ***cells;
-} CellGrid;
+/*typedef struct {*/
+/*	float x;*/
+/*	float y;*/
+/*	int rows;*/
+/*	int cols;*/
+/*	int cell_h;*/
+/*	int cell_w;*/
+/*	Cell ***cells;*/
+/*} CellGrid;*/
 
 typedef struct {
     size_t num_elements;
