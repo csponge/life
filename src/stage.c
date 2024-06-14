@@ -300,7 +300,11 @@ Stage *init_stage(App *app, int rows, int cols) {
 }
 
 void free_stage(Stage *stage) {
-	/*free_cells(stage->grid.cells, stage->grid.rows, stage->grid.cols);*/
+    for (int i = 0; i < stage->num_elements; i++) {
+        GuiElement *el = stage->elements[i];
+        el->destroy(el->element);
+    }
+
 	free(stage);
 	stage = NULL;
 }

@@ -9,6 +9,7 @@
 void draw_button(DrawInfo *info, void *button);
 void draw_cell_grid(DrawInfo *info, void *grid);
 void destroy_button(void *button);
+void destroy_cell_grid(void *cgrid);
 
 GuiElement *new_element(void *element) {
 	GuiElement *el = calloc(1, sizeof(GuiElement));
@@ -30,7 +31,7 @@ GuiElement *new_button(float x, float y) {
 	if (el != NULL) {
 		el->element = btn;
 		el->draw = draw_button;
-        el->free = destroy_button;
+        el->destroy = destroy_button;
 	}
 
 	return el;
@@ -66,6 +67,7 @@ GuiElement *new_cell_grid(int rows, int cols, float x, float y) {
     if (el != NULL) {
         el->element = grid;
         el->draw = draw_cell_grid;
+        el->destroy = destroy_cell_grid;
     }
 
 	return el;
@@ -187,7 +189,7 @@ void draw_cell_grid(DrawInfo *info, void *grid) {
 	}
 }
 
-void free_cells(Cell ***cells, int rows, int cols) {
+void destroy_cells(Cell ***cells, int rows, int cols) {
 	for (int row = 0; row < rows; row++) {
 		for (int col = 0; col < cols; col++) {
 			free(cells[row][col]);
@@ -199,4 +201,9 @@ void free_cells(Cell ***cells, int rows, int cols) {
 	cells = NULL;
 }
 
+void destroy_cell_grid(void *cgrid) {
+    CellGrid *grid = (CellGrid *)cgrid;
 
+    destroy_cells(grid->cells, grid->rows, grid->cols);
+    free(grid);
+}

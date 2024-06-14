@@ -37,7 +37,7 @@ typedef struct {
 typedef struct _guiElement{
     void *element;
     void (*draw)(DrawInfo *info, void *element);
-    void (*free)(void *element);
+    void (*destroy)(void *element);
 } GuiElement;
 
 /**
