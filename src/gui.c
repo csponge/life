@@ -31,56 +31,10 @@ GuiElement *new_button(float x, float y) {
 	if (el != NULL) {
 		el->element = btn;
 		el->draw = draw_button;
-        el->destroy = destroy_button;
+		el->destroy = destroy_button;
 	}
 
 	return el;
-}
-
-GuiElement *new_cell_grid(int rows, int cols, float x, float y) {
-    CellGrid *grid = calloc(1, sizeof(CellGrid));
-    if (grid == NULL) {
-        return NULL;
-    }
-
-    grid->x = x;
-    grid->y = y;
-    grid->rows = rows;
-    grid->cols = cols;
-    grid->cell_h = CELL;
-    grid->cell_w = CELL;
-
-	Cell ***cells = calloc(rows, sizeof(Cell *));
-	for (int row = 0; row < rows; row++) {
-		cells[row] = calloc(cols, sizeof(Cell *));
-	}
-
-	for (int row = 0; row < rows; row++) {
-		for (int col = 0; col < cols; col++) {
-			cells[row][col] = (Cell *)calloc(1, sizeof(Cell));
-			cells[row][col]->alive = false;
-		}
-	}
-    grid->cells = cells;
-
-    GuiElement *el = calloc(1, sizeof(GuiElement));
-    if (el != NULL) {
-        el->element = grid;
-        el->draw = draw_cell_grid;
-        el->destroy = destroy_cell_grid;
-    }
-
-	return el;
-}
-
-int button_set_text(Button *btn, char *text, size_t len) {
-	btn->text = malloc(sizeof(char) * len);
-	if (btn->text != NULL) {
-		memcpy(btn->text, text, len);
-		return len;
-	}
-
-	return -1;
 }
 
 void draw_button(DrawInfo *info, void *button) {
@@ -95,9 +49,7 @@ void draw_button(DrawInfo *info, void *button) {
 		return;
 	}
 
-
-	SDL_Surface *text =
-	    TTF_RenderUTF8_Solid(info->font, btn->text, black);
+	SDL_Surface *text = TTF_RenderUTF8_Solid(info->font, btn->text, black);
 
 	if (text == NULL) {
 		SDL_LogMessage(
@@ -113,9 +65,10 @@ void draw_button(DrawInfo *info, void *button) {
 	    .y = btn->y,
 	};
 
-    SDL_QueryTexture(btn->texture, NULL, NULL, &dest.w, &dest.h);
+	SDL_QueryTexture(btn->texture, NULL, NULL, &dest.w, &dest.h);
 
-    SDL_LogInfo(SDL_LOG_PRIORITY_INFO, "button texture size -> w:%d h:%d\n", dest.w, dest.h);
+	SDL_LogInfo(SDL_LOG_PRIORITY_INFO, "button texture size -> w:%d h:%d\n",
+	            dest.w, dest.h);
 
 	ret = SDL_RenderDrawRect(info->renderer, &dest);
 	if (ret != 0) {
@@ -128,11 +81,57 @@ void draw_button(DrawInfo *info, void *button) {
 	SDL_RenderCopy(info->renderer, btn->texture, NULL, &dest);
 }
 
+int button_set_text(Button *btn, char *text, size_t len) {
+	btn->text = malloc(sizeof(char) * len);
+	if (btn->text != NULL) {
+		memcpy(btn->text, text, len);
+		return len;
+	}
+
+	return -1;
+}
+
 void destroy_button(void *button) {
-    Button *btn = (Button *)button;
-    SDL_DestroyTexture(btn->texture);
+	Button *btn = (Button *)button;
+	SDL_DestroyTexture(btn->texture);
 	free(btn->text);
 	free(btn);
+}
+
+GuiElement *new_cell_grid(int rows, int cols, float x, float y) {
+	CellGrid *grid = calloc(1, sizeof(CellGrid));
+	if (grid == NULL) {
+		return NULL;
+	}
+
+	grid->x = x;
+	grid->y = y;
+	grid->rows = rows;
+	grid->cols = cols;
+	grid->cell_h = CELL;
+	grid->cell_w = CELL;
+
+	Cell ***cells = calloc(rows, sizeof(Cell *));
+	for (int row = 0; row < rows; row++) {
+		cells[row] = calloc(cols, sizeof(Cell *));
+	}
+
+	for (int row = 0; row < rows; row++) {
+		for (int col = 0; col < cols; col++) {
+			cells[row][col] = (Cell *)calloc(1, sizeof(Cell));
+			cells[row][col]->alive = false;
+		}
+	}
+	grid->cells = cells;
+
+	GuiElement *el = calloc(1, sizeof(GuiElement));
+	if (el != NULL) {
+		el->element = grid;
+		el->draw = draw_cell_grid;
+		el->destroy = destroy_cell_grid;
+	}
+
+	return el;
 }
 
 void draw_cell(SDL_Renderer *renderer, Cell *cell, int w, int h) {
@@ -144,8 +143,7 @@ void draw_cell(SDL_Renderer *renderer, Cell *cell, int w, int h) {
 	dest.h = h;
 
 	// set the render color for all cells
-	if (SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE) !=
-	    0) {
+	if (SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE) != 0) {
 		SDL_LogMessage(
 		    SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
 		    "failed to set the render color: %s", SDL_GetError());
@@ -168,23 +166,24 @@ void draw_cell(SDL_Renderer *renderer, Cell *cell, int w, int h) {
 	}
 }
 
-void draw_cell_grid(DrawInfo *info, void *grid) {
-    CellGrid *cgrid = (CellGrid *)grid;
+void draw_cell_grid(DrawInfo *info, void *cgrid) {
+	CellGrid *grid = (CellGrid *)cgrid;
 
-	int x = cgrid->x;
-	int y = cgrid->y;
+	int x = grid->x;
+	int y = grid->y;
 
-	for (int row = 0; row < cgrid->rows; row++) {
-		for (int col = 0; col < cgrid->cols; col++) {
-			Cell *cell = cgrid->cells[row][col];
+	for (int row = 0; row < grid->rows; row++) {
+		for (int col = 0; col < grid->cols; col++) {
+			Cell *cell = grid->cells[row][col];
 			cell->x = x;
 			cell->y = y;
 
-			draw_cell(info->renderer, cell, cgrid->cell_h, cgrid->cell_w);
+			draw_cell(info->renderer, cell, grid->cell_h,
+			          grid->cell_w);
 
-			x += cgrid->cell_w;
+			x += grid->cell_w;
 		}
-		y += cgrid->cell_h;
+		y += grid->cell_h;
 		x = 0;
 	}
 }
@@ -202,8 +201,8 @@ void destroy_cells(Cell ***cells, int rows, int cols) {
 }
 
 void destroy_cell_grid(void *cgrid) {
-    CellGrid *grid = (CellGrid *)cgrid;
+	CellGrid *grid = (CellGrid *)cgrid;
 
-    destroy_cells(grid->cells, grid->rows, grid->cols);
-    free(grid);
+	destroy_cells(grid->cells, grid->rows, grid->cols);
+	free(grid);
 }

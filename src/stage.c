@@ -123,7 +123,8 @@ Cell ***initialize_cells(int rows, int cols) {
 /*	dest.h = h;*/
 /**/
 /*	// set the render color for all cells*/
-/*	if (SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE) !=*/
+/*	if (SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE)
+ * !=*/
 /*	    0) {*/
 /*		SDL_LogMessage(*/
 /*		    SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,*/
@@ -133,7 +134,8 @@ Cell ***initialize_cells(int rows, int cols) {
 /*	if (SDL_RenderDrawRect(app->renderer, &dest) != 0) {*/
 /*		SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,*/
 /*		               SDL_LOG_PRIORITY_ERROR,*/
-/*		               "failed to draw rectangle: %s", SDL_GetError());*/
+/*		               "failed to draw rectangle: %s",
+ * SDL_GetError());*/
 /*	}*/
 /**/
 /*	// only alive cells should be filled in*/
@@ -203,12 +205,12 @@ Cell ***initialize_cells(int rows, int cols) {
 /*}*/
 
 void draw(App *app, Stage *stage) {
-    DrawInfo info = {.renderer = app->renderer, .font = app->font};
+	DrawInfo info = {.renderer = app->renderer, .font = app->font};
 
-    for (int i = 0; i < stage->num_elements; i++) {
-        GuiElement *el = stage->elements[i];
-        el->draw(&info, el->element);
-    }
+	for (int i = 0; i < stage->num_elements; i++) {
+		GuiElement *el = stage->elements[i];
+		el->draw(&info, el->element);
+	}
 
 	/*draw_toolbar(app, &stage->toolbar);*/
 	/*draw_cells(app, &stage->grid);*/
@@ -274,7 +276,7 @@ void draw(App *app, Stage *stage) {
 /*}*/
 
 void add_elem_to_stage(Stage *stage, GuiElement *element) {
-    stage->elements[stage->num_elements++] = element;
+	stage->elements[stage->num_elements++] = element;
 };
 
 Stage *init_stage(App *app, int rows, int cols) {
@@ -283,27 +285,27 @@ Stage *init_stage(App *app, int rows, int cols) {
 	/*app->delegate.mouse_click = mouse_click;*/
 
 	Stage *stage = calloc(1, sizeof(Stage));
-    stage->elements = calloc(2, sizeof(GuiElement *));
+	stage->elements = calloc(2, sizeof(GuiElement *));
 
 	// Create play button
 	GuiElement *play = new_button(10, 10);
-    button_set_text((Button *)play->element, "Play", 4);
+	button_set_text((Button *)play->element, "Play", 4);
 
 	// assign gui element
-    add_elem_to_stage(stage, play);
+	add_elem_to_stage(stage, play);
 
-    // Create grid
-    GuiElement *grid = new_cell_grid(rows, cols, 0, 60);
-    add_elem_to_stage(stage, grid);
+	// Create grid
+	GuiElement *grid = new_cell_grid(rows, cols, 0, 60);
+	add_elem_to_stage(stage, grid);
 
 	return stage;
 }
 
 void free_stage(Stage *stage) {
-    for (int i = 0; i < stage->num_elements; i++) {
-        GuiElement *el = stage->elements[i];
-        el->destroy(el->element);
-    }
+	for (int i = 0; i < stage->num_elements; i++) {
+		GuiElement *el = stage->elements[i];
+		el->destroy(el->element);
+	}
 
 	free(stage);
 	stage = NULL;
