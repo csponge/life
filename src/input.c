@@ -1,6 +1,7 @@
 #include "input.h"
 #include "structs.h"
 #include <SDL2/SDL_events.h>
+#include <SDL2/SDL_log.h>
 #include <SDL2/SDL_scancode.h>
 
 void do_key_down(App *app, SDL_KeyboardEvent *event) {

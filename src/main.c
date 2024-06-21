@@ -52,9 +52,7 @@ int main() {
 
 		do_input(app);
 
-		/*      printf("mouse_click\n");*/
-		/*app->delegate.mouse_click(app, stage);*/
-		/*      printf("logic\n");*/
+		app->delegate.mouse_click(app, stage);
 		/*app->delegate.logic(app, stage);*/
 		app->delegate.draw(app, stage);
 

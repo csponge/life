@@ -16,7 +16,7 @@
 [ ] Slow down frames
 
 # GUI System
-I want to make it easier to draw buttons and other gui elements. 
+[ ] make elements clickable
 
 How am I going to do that?
 - Everything is essentially a rectangle

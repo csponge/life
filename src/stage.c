@@ -205,15 +205,35 @@ Cell ***initialize_cells(int rows, int cols) {
 /*}*/
 
 void draw(App *app, Stage *stage) {
-	DrawInfo info = {.renderer = app->renderer, .font = app->font};
+	for (int i = 0; i < stage->num_elements; i++) {
+		GuiElement *el = stage->elements[i];
+		el->draw(app->renderer, el->element);
+	}
+}
+
+void mouse_click(App *app, Stage *stage) {
+	if (app->mouse.clicked == false)
+		return;
+
+	int x = app->mouse.x;
+	int y = app->mouse.y;
 
 	for (int i = 0; i < stage->num_elements; i++) {
 		GuiElement *el = stage->elements[i];
-		el->draw(&info, el->element);
-	}
+		if (el->is_clicked == NULL)
+			continue;
 
-	/*draw_toolbar(app, &stage->toolbar);*/
-	/*draw_cells(app, &stage->grid);*/
+		if (el->is_clicked(el->element, x, y)) {
+			el->clicked();
+		}
+	}
+}
+
+bool play_clicked() {
+    /*if (argc != 1) return false;*/
+    /**/
+    /*App *app = (App *)args[0];*/
+    /*app->run = true;*/
 }
 
 /*void mouse_click(App *app, Stage *stage) {*/
@@ -282,14 +302,16 @@ void add_elem_to_stage(Stage *stage, GuiElement *element) {
 Stage *init_stage(App *app, int rows, int cols) {
 	/*app->delegate.logic = logic;*/
 	app->delegate.draw = draw;
-	/*app->delegate.mouse_click = mouse_click;*/
+	app->delegate.mouse_click = mouse_click;
 
 	Stage *stage = calloc(1, sizeof(Stage));
 	stage->elements = calloc(2, sizeof(GuiElement *));
 
+	DrawInfo info = {.renderer = app->renderer, .font = app->font};
+
 	// Create play button
 	GuiElement *play = new_button(10, 10);
-	button_set_text((Button *)play->element, "Play", 4);
+	button_set_text((Button *)play->element, &info, "Play");
 
 	// assign gui element
 	add_elem_to_stage(stage, play);
