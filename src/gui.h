@@ -6,6 +6,7 @@
 #include <stdbool.h>
 
 typedef struct _Button Button;
+typedef struct _clickEventArgs ClickEventArgs;
 
 struct _Button {
 	SDL_Rect rect;
@@ -19,8 +20,8 @@ typedef struct {
 } Cell;
 
 typedef struct {
-	float x;
-	float y;
+	int x;
+	int y;
 	int rows;
 	int cols;
 	int cell_h;
@@ -37,9 +38,16 @@ typedef struct _guiElement {
 	void *element;
 	void (*draw)(SDL_Renderer *renderer, void *element);
 	bool (*is_clicked)(void *element, int x, int y);
-	void (*clicked)(void);
+	void (*clicked)(ClickEventArgs args);
+    void (*logic)(void *element);
 	void (*destroy)(void *element);
 } GuiElement;
+
+struct _clickEventArgs {
+    int x;
+    int y;
+    GuiElement *element;
+};
 
 /**
  * Creates a new `GuiElement` struct of type `Button`.
@@ -51,7 +59,7 @@ GuiElement *new_button(int x, int y);
  * Creates a new `GuiElement` struct of type `Grid`.
  * Returns NULL if failed.
  * */
-GuiElement *new_cell_grid(int rows, int cols, float x, float y);
+GuiElement *new_cell_grid(int rows, int cols, int x, int y);
 
 /**
  * Copies the text to the button struct. Returns the number

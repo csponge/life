@@ -1,3 +1,4 @@
+#include "command.h"
 #include "defs.h"
 #include "draw.h"
 #include "init.h"
@@ -6,7 +7,6 @@
 #include "structs.h"
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_timer.h>
-#include <stdio.h>
 #include <unistd.h>
 
 static void cap_frame_rate(long *then, float *remainder) {
@@ -40,9 +40,9 @@ int main() {
 	int rows = SCREEN_HEIGHT / CELL;
 	int cols = SCREEN_WIDTH / CELL;
 
-	printf("Running with rows:%d cols:%d\n", rows, cols);
-
 	Stage *stage = init_stage(app, rows, cols);
+
+	command_queue_init();
 
 	then = SDL_GetTicks();
 	remainder = 0;
@@ -50,10 +50,21 @@ int main() {
 	while (1) {
 		prepare_scene(app);
 
-		do_input(app);
+		do_input(app, stage);
 
-		app->delegate.mouse_click(app, stage);
-		/*app->delegate.logic(app, stage);*/
+		Command cmd = command_dequeue();
+		switch (cmd) {
+		case Nop:
+			break;
+		case Play:
+			app->run = true;
+			break;
+		}
+
+        if (app->run == true) {
+            app->delegate.logic(app, stage);
+        }
+
 		app->delegate.draw(app, stage);
 
 		present_scene(app);
@@ -62,6 +73,7 @@ int main() {
 	}
 
 	// cleanup
+	command_queue_free();
 	free_stage(stage);
 	free_app(app);
 	return 0;

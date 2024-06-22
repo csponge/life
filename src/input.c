@@ -1,4 +1,5 @@
 #include "input.h"
+#include "stage.h"
 #include "structs.h"
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_log.h>
@@ -21,19 +22,11 @@ void do_key_up(App *app, SDL_KeyboardEvent *event) {
 	/*}*/
 }
 
-void do_mouse_down(App *app, SDL_MouseButtonEvent *event) {
-	app->mouse.clicked = true;
-	app->mouse.x = event->x;
-	app->mouse.y = event->y;
+void do_mouse_down(Stage *stage, SDL_MouseButtonEvent *event) {
+    mouse_click(stage, event->x, event->y);
 }
 
-void do_mouse_up(App *app, SDL_MouseButtonEvent *event) {
-	app->mouse.clicked = false;
-	app->mouse.x = -1;
-	app->mouse.y = -1;
-}
-
-void do_input(App *app) {
+void do_input(App *app, Stage *stage) {
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event)) {
@@ -51,12 +44,9 @@ void do_input(App *app) {
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
-			do_mouse_down(app, &event.button);
+			do_mouse_down(stage, &event.button);
 			break;
 
-		case SDL_MOUSEBUTTONUP:
-			do_mouse_up(app, &event.button);
-			break;
 		default:
 			break;
 		}

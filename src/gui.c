@@ -13,7 +13,6 @@ void destroy_button(void *button);
 void destroy_cell_grid(void *cgrid);
 bool is_button_clicked(void *element, int x, int y);
 
-
 GuiElement *new_element(void *element) {
 	GuiElement *el = calloc(1, sizeof(GuiElement));
 	if (el != NULL) {
@@ -36,6 +35,8 @@ GuiElement *new_button(int x, int y) {
 		el->draw = button_blit;
 		el->is_clicked = is_button_clicked;
 		el->destroy = destroy_button;
+		el->clicked = NULL;
+		el->logic = NULL;
 	}
 
 	return el;
@@ -101,7 +102,12 @@ void destroy_button(void *button) {
 	free(btn);
 }
 
-GuiElement *new_cell_grid(int rows, int cols, float x, float y) {
+bool is_cell_grid_clicked(void *element, int x, int y) {
+	CellGrid *grid = (CellGrid *)element;
+	return x >= grid->x && y >= grid->y ? true : false;
+}
+
+GuiElement *new_cell_grid(int rows, int cols, int x, int y) {
 	CellGrid *grid = calloc(1, sizeof(CellGrid));
 	if (grid == NULL) {
 		return NULL;
@@ -131,8 +137,9 @@ GuiElement *new_cell_grid(int rows, int cols, float x, float y) {
 	if (el != NULL) {
 		el->element = grid;
 		el->draw = draw_cell_grid;
-		el->is_clicked = NULL; // TODO - add this later
 		el->destroy = destroy_cell_grid;
+		el->is_clicked = is_cell_grid_clicked;
+		el->logic = NULL;
 	}
 
 	return el;
