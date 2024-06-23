@@ -216,19 +216,19 @@ Stage *init_stage(App *app, int rows, int cols) {
 	button_set_text(play, &info, "Play");
 	stage->play_btn = play;
 
-	Button *pause = new_button(110, 10);
+	Button *pause = new_button(80, 10);
 	button_set_text(pause, &info, "Pause");
 	stage->pause_btn = pause;
 
-    Button *seed = new_button(210, 10);
+    Button *seed = new_button(170, 10);
     button_set_text(seed, &info, "Seed");
     stage->seed_btn = seed;
 
-    Button *dec_tick = new_button(310, 10);
+    Button *dec_tick = new_button(245, 10);
     button_set_text(dec_tick, &info, "Dec");
     stage->dec_tick_btn = dec_tick;
 
-    Button *inc_tick = new_button(380, 10);
+    Button *inc_tick = new_button(310, 10);
     button_set_text(inc_tick, &info, "Inc");
     stage->inc_tick_btn = inc_tick;
 
