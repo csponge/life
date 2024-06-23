@@ -26,6 +26,8 @@ App *init_app(void) {
 		return NULL;
 	}
 
+    app->logic_tick = 10;
+
 	app->window = SDL_CreateWindow("Life", SDL_WINDOWPOS_UNDEFINED,
 	                               SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
 	                               SCREEN_HEIGHT, window_flags);

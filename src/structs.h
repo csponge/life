@@ -11,17 +11,22 @@
 typedef struct _App App;
 
 typedef struct {
-    size_t num_elements;
-    GuiElement **elements;
+    Button *play_btn;
+    Button *pause_btn;
+    Button *seed_btn;
+    Button *dec_tick_btn;
+    Button *inc_tick_btn;
+    CellGrid *cell_grid;
 } Stage;
 
 typedef struct {
 	void (*logic)(App *app, Stage *stage);
-	void (*draw)(App *app, Stage *stage);
+	void (*draw)(Stage *stage, SDL_Renderer *renderer);
 } Delegate;
 
 struct _App {
 	bool run;
+    int logic_tick;
 	SDL_Renderer *renderer;
 	TTF_Font *font;
 	SDL_Window *window;

@@ -7,44 +7,10 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
 
-void button_blit(SDL_Renderer *renderer, void *button);
 void draw_cell_grid(SDL_Renderer *renderer, void *grid);
-void destroy_button(void *button);
 void destroy_cell_grid(void *cgrid);
-bool is_button_clicked(void *element, int x, int y);
 
-GuiElement *new_element(void *element) {
-	GuiElement *el = calloc(1, sizeof(GuiElement));
-	if (el != NULL) {
-		el->element = element;
-	}
-
-	return el;
-}
-
-GuiElement *new_button(int x, int y) {
-	Button *btn = calloc(1, sizeof(Button));
-	if (btn != NULL) {
-		btn->rect.x = x;
-		btn->rect.y = y;
-	}
-
-	GuiElement *el = calloc(1, sizeof(GuiElement));
-	if (el != NULL) {
-		el->element = btn;
-		el->draw = button_blit;
-		el->is_clicked = is_button_clicked;
-		el->destroy = destroy_button;
-		el->clicked = NULL;
-		el->logic = NULL;
-	}
-
-	return el;
-}
-
-void button_blit(SDL_Renderer *renderer, void *button) {
-	Button *btn = (Button *)button;
-
+void button_blit(Button *btn, SDL_Renderer *renderer) {
 	int ret = 0;
 	ret = SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
 	if (ret != 0) {
@@ -65,6 +31,17 @@ void button_blit(SDL_Renderer *renderer, void *button) {
 	SDL_RenderCopy(renderer, btn->texture, NULL, &btn->rect);
 }
 
+Button *new_button(int x, int y) {
+	Button *btn = calloc(1, sizeof(Button));
+	if (btn != NULL) {
+		btn->rect.x = x;
+		btn->rect.y = y;
+	}
+
+	return btn;
+}
+
+
 int button_set_text(Button *btn, DrawInfo *info, char *text) {
 	SDL_Surface *text_surf = TTF_RenderUTF8_Solid(info->font, text, black);
 
@@ -82,9 +59,7 @@ int button_set_text(Button *btn, DrawInfo *info, char *text) {
 	return 0;
 }
 
-bool is_button_clicked(void *element, int x, int y) {
-	Button *btn = (Button *)element;
-
+bool is_button_clicked(Button *btn, int x, int y) {
 	if (btn->rect.y > y || (btn->rect.y + btn->rect.h) < y) {
 		return false;
 	}
@@ -96,18 +71,61 @@ bool is_button_clicked(void *element, int x, int y) {
 	return true;
 }
 
-void destroy_button(void *button) {
-	Button *btn = (Button *)button;
+void button_destroy(Button *btn) {
 	SDL_DestroyTexture(btn->texture);
 	free(btn);
 }
 
-bool is_cell_grid_clicked(void *element, int x, int y) {
-	CellGrid *grid = (CellGrid *)element;
+void text_box_blit(TextBox *tb, SDL_Renderer *renderer) {
+	int ret = 0;
+	ret = SDL_SetRenderDrawColor(renderer, 255, 0, 0, SDL_ALPHA_OPAQUE);
+	if (ret != 0) {
+		SDL_LogMessage(
+		    SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
+		    "failed to set the render color: %s", SDL_GetError());
+		return;
+	}
+
+	SDL_RenderCopy(renderer, tb->texture, NULL, &tb->rect);
+}
+
+void text_box_destroy(TextBox *tb) {
+	SDL_DestroyTexture(tb->texture);
+	free(tb);
+}
+
+TextBox *new_text_box(int x, int y) {
+	TextBox *tb = calloc(1, sizeof(TextBox));
+	if (tb != NULL) {
+		tb->rect.x = x;
+		tb->rect.y = y;
+	}
+
+	return tb;
+}
+
+int text_box_set_text(TextBox *tb, DrawInfo *info, char *text) {
+	SDL_Surface *text_surf = TTF_RenderUTF8_Solid(info->font, text, red);
+
+	if (text_surf == NULL) {
+		SDL_LogMessage(
+		    SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_ERROR,
+		    "failed to get rendered text: %s\n", SDL_GetError());
+		return 1;
+	}
+
+	tb->texture = SDL_CreateTextureFromSurface(info->renderer, text_surf);
+
+	SDL_QueryTexture(tb->texture, NULL, NULL, &tb->rect.w, &tb->rect.h);
+
+	return 0;
+}
+
+bool is_cell_grid_clicked(CellGrid *grid, int x, int y) {
 	return x >= grid->x && y >= grid->y ? true : false;
 }
 
-GuiElement *new_cell_grid(int rows, int cols, int x, int y) {
+CellGrid *new_cell_grid(int rows, int cols, int x, int y) {
 	CellGrid *grid = calloc(1, sizeof(CellGrid));
 	if (grid == NULL) {
 		return NULL;
@@ -133,16 +151,7 @@ GuiElement *new_cell_grid(int rows, int cols, int x, int y) {
 	}
 	grid->cells = cells;
 
-	GuiElement *el = calloc(1, sizeof(GuiElement));
-	if (el != NULL) {
-		el->element = grid;
-		el->draw = draw_cell_grid;
-		el->destroy = destroy_cell_grid;
-		el->is_clicked = is_cell_grid_clicked;
-		el->logic = NULL;
-	}
-
-	return el;
+	return grid;
 }
 
 void draw_cell(SDL_Renderer *renderer, Cell *cell, int w, int h) {
@@ -177,9 +186,7 @@ void draw_cell(SDL_Renderer *renderer, Cell *cell, int w, int h) {
 	}
 }
 
-void draw_cell_grid(SDL_Renderer *renderer, void *cgrid) {
-	CellGrid *grid = (CellGrid *)cgrid;
-
+void cell_grid_blit(CellGrid *grid, SDL_Renderer *renderer) {
 	int x = grid->x;
 	int y = grid->y;
 
@@ -210,9 +217,7 @@ void destroy_cells(Cell ***cells, int rows, int cols) {
 	cells = NULL;
 }
 
-void destroy_cell_grid(void *cgrid) {
-	CellGrid *grid = (CellGrid *)cgrid;
-
+void cell_grid_destroy(CellGrid *grid) {
 	destroy_cells(grid->cells, grid->rows, grid->cols);
 	free(grid);
 }

@@ -1,4 +1,3 @@
-#include "command.h"
 #include "defs.h"
 #include "draw.h"
 #include "init.h"
@@ -42,30 +41,25 @@ int main() {
 
 	Stage *stage = init_stage(app, rows, cols);
 
-	command_queue_init();
-
 	then = SDL_GetTicks();
 	remainder = 0;
+
+    int logic_ticker = 0;
 
 	while (1) {
 		prepare_scene(app);
 
 		do_input(app, stage);
 
-		Command cmd = command_dequeue();
-		switch (cmd) {
-		case Nop:
-			break;
-		case Play:
-			app->run = true;
-			break;
-		}
-
         if (app->run == true) {
-            app->delegate.logic(app, stage);
+            if (logic_ticker == app->logic_tick || app->logic_tick == 0) {
+                app->delegate.logic(app, stage);
+                logic_ticker = 0;
+            }
+            logic_ticker++;
         }
 
-		app->delegate.draw(app, stage);
+		app->delegate.draw(stage, app->renderer);
 
 		present_scene(app);
 
@@ -73,7 +67,6 @@ int main() {
 	}
 
 	// cleanup
-	command_queue_free();
 	free_stage(stage);
 	free_app(app);
 	return 0;

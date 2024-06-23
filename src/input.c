@@ -22,8 +22,8 @@ void do_key_up(App *app, SDL_KeyboardEvent *event) {
 	/*}*/
 }
 
-void do_mouse_down(Stage *stage, SDL_MouseButtonEvent *event) {
-    mouse_click(stage, event->x, event->y);
+void do_mouse_down(App *app, Stage *stage, SDL_MouseButtonEvent *event) {
+    mouse_click(app, stage, event->x, event->y);
 }
 
 void do_input(App *app, Stage *stage) {
@@ -44,7 +44,7 @@ void do_input(App *app, Stage *stage) {
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
-			do_mouse_down(stage, &event.button);
+			do_mouse_down(app, stage, &event.button);
 			break;
 
 		default:

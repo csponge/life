@@ -1,4 +1,3 @@
-#include "command.h"
 #include "structs.h"
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_log.h>
@@ -7,6 +6,8 @@
 #include <SDL2/SDL_stdinc.h>
 #include <stdbool.h>
 #include <stdlib.h>
+
+int generation = 0;
 
 Cell ***initialize_cells(int rows, int cols) {
 	Cell ***cells = calloc(rows, sizeof(Cell *));
@@ -78,8 +79,23 @@ int count_live_neighbors(CellGrid *grid, int row, int col) {
 	return live_neighbors;
 }
 
-void cell_grid_logic(void *element) {
-	CellGrid *grid = (CellGrid *)element;
+void seed(CellGrid *grid) {
+	for (int row = 0; row < grid->rows; row++) {
+		for (int col = 0; col < grid->cols; col++) {
+			int isAlive = rand() % (10 + 1);
+
+			grid->cells[row][col] =
+			    (Cell *)calloc(1, sizeof(Cell));
+			if (isAlive <= 1) {
+				grid->cells[row][col]->alive = true;
+			} else {
+				grid->cells[row][col]->alive = false;
+			}
+		}
+	}
+}
+
+void next_generation(CellGrid *grid) {
 	Cell ***new_cells = initialize_cells(grid->rows, grid->cols);
 
 	for (int row = 0; row < grid->rows; row++) {
@@ -105,48 +121,23 @@ void cell_grid_logic(void *element) {
 	}
 
 	free_cells(grid->cells, grid->rows, grid->cols);
-	grid->cells = new_cells;
+    grid->cells = new_cells;
 }
 
-void draw(App *app, Stage *stage) {
-	for (int i = 0; i < stage->num_elements; i++) {
-		GuiElement *el = stage->elements[i];
-		el->draw(app->renderer, el->element);
-	}
+void draw(Stage *stage, SDL_Renderer *renderer) {
+    button_blit(stage->play_btn, renderer);
+    button_blit(stage->pause_btn, renderer);
+    button_blit(stage->seed_btn, renderer);
+    button_blit(stage->dec_tick_btn, renderer);
+    button_blit(stage->inc_tick_btn, renderer);
+    cell_grid_blit(stage->cell_grid, renderer);
 }
 
 void logic(App *app, Stage *stage) {
-	for (int i = 0; i < stage->num_elements; i++) {
-		GuiElement *el = stage->elements[i];
-		if (el->logic != NULL) {
-			el->logic(el->element);
-		}
-	}
+    next_generation(stage->cell_grid);
 }
 
-void mouse_click(Stage *stage, int x, int y) {
-	for (int i = 0; i < stage->num_elements; i++) {
-		GuiElement *el = stage->elements[i];
-		if (el->is_clicked == NULL)
-			continue;
-
-		if (el->is_clicked(el->element, x, y)) {
-			ClickEventArgs args = {
-			    .x = x, .y = y, .element = el->element};
-			el->clicked(args);
-		}
-	}
-}
-
-void play_clicked(ClickEventArgs args) { 
-    command_enqueue(Play); 
-}
-
-void cell_grid_clicked(ClickEventArgs args) {
-	CellGrid *grid = (CellGrid *)args.element;
-	int x = args.x;
-	int y = args.y;
-
+void cell_grid_clicked(CellGrid *grid, int x, int y) {
 	int found_row = -1;
 	int found_col = -1;
 
@@ -178,57 +169,81 @@ void cell_grid_clicked(ClickEventArgs args) {
 	}
 }
 
-/*void seed(Stage *stage) {*/
-/*	for (int row = 0; row < stage->grid.rows; row++) {*/
-/*		for (int col = 0; col < stage->grid.cols; col++) {*/
-/*			int isAlive = rand() % (10 + 1);*/
-/**/
-/*			stage->grid.cells[row][col] =*/
-/*			    (Cell *)calloc(1, sizeof(Cell));*/
-/*			if (isAlive <= 1) {*/
-/*				stage->grid.cells[row][col]->alive = true;*/
-/*			} else {*/
-/*				stage->grid.cells[row][col]->alive = false;*/
-/*			}*/
-/*		}*/
-/*	}*/
-/*}*/
+void mouse_click(App *app, Stage *stage, int x, int y) {
+	bool clicked = false;
 
-void add_elem_to_stage(Stage *stage, GuiElement *element) {
-	stage->elements[stage->num_elements++] = element;
-};
+	clicked = is_button_clicked(stage->play_btn, x, y);
+	if (clicked) {
+		app->run = true;
+	}
+
+	clicked = is_button_clicked(stage->pause_btn, x, y);
+	if (clicked) {
+		app->run = false;
+	}
+
+	clicked = is_button_clicked(stage->seed_btn, x, y);
+	if (clicked) {
+        seed(stage->cell_grid);
+	}
+
+	clicked = is_button_clicked(stage->dec_tick_btn, x, y);
+	if (clicked) {
+        if (app->logic_tick > 0)
+            app->logic_tick-=10;
+	}
+
+	clicked = is_button_clicked(stage->inc_tick_btn, x, y);
+	if (clicked) {
+        app->logic_tick+=10;
+	}
+
+	clicked = is_cell_grid_clicked(stage->cell_grid, x, y);
+	if (clicked) {
+		cell_grid_clicked(stage->cell_grid, x, y);
+	}
+}
 
 Stage *init_stage(App *app, int rows, int cols) {
 	app->delegate.logic = logic;
 	app->delegate.draw = draw;
 
 	Stage *stage = calloc(1, sizeof(Stage));
-	stage->elements = calloc(2, sizeof(GuiElement *));
 
 	DrawInfo info = {.renderer = app->renderer, .font = app->font};
 
-	// Create play button
-	GuiElement *play = new_button(10, 10);
-	button_set_text((Button *)play->element, &info, "Play");
-	play->clicked = play_clicked;
+	Button *play = new_button(10, 10);
+	button_set_text(play, &info, "Play");
+	stage->play_btn = play;
 
-	// assign gui element
-	add_elem_to_stage(stage, play);
+	Button *pause = new_button(110, 10);
+	button_set_text(pause, &info, "Pause");
+	stage->pause_btn = pause;
 
-	// Create grid
-	GuiElement *grid = new_cell_grid(rows, cols, 0, 60);
-	grid->logic = cell_grid_logic;
-	grid->clicked = cell_grid_clicked;
-	add_elem_to_stage(stage, grid);
+    Button *seed = new_button(210, 10);
+    button_set_text(seed, &info, "Seed");
+    stage->seed_btn = seed;
+
+    Button *dec_tick = new_button(310, 10);
+    button_set_text(dec_tick, &info, "Dec");
+    stage->dec_tick_btn = dec_tick;
+
+    Button *inc_tick = new_button(380, 10);
+    button_set_text(inc_tick, &info, "Inc");
+    stage->inc_tick_btn = inc_tick;
+
+	CellGrid *grid = new_cell_grid(rows, cols, 0, 60);
+	stage->cell_grid = grid;
 
 	return stage;
 }
 
 void free_stage(Stage *stage) {
-	for (int i = 0; i < stage->num_elements; i++) {
-		GuiElement *el = stage->elements[i];
-		el->destroy(el->element);
-	}
+    button_destroy(stage->play_btn);
+    button_destroy(stage->pause_btn);
+    button_destroy(stage->dec_tick_btn);
+    button_destroy(stage->inc_tick_btn);
+    cell_grid_destroy(stage->cell_grid);
 
 	free(stage);
 	stage = NULL;
