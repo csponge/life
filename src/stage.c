@@ -232,7 +232,8 @@ Stage *init_stage(App *app, int rows, int cols) {
     button_set_text(inc_tick, &info, "Inc");
     stage->inc_tick_btn = inc_tick;
 
-	CellGrid *grid = new_cell_grid(rows, cols, 0, 60);
+	int cell_start = SCREEN_HEIGHT - (rows * CELL);
+	CellGrid *grid = new_cell_grid(rows, cols, 0, cell_start);
 	stage->cell_grid = grid;
 
 	return stage;

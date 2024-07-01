@@ -36,7 +36,7 @@ int main() {
 
 	App *app = init_app();
 
-	int rows = SCREEN_HEIGHT / CELL;
+	int rows = GRID_HEIGHT / CELL;
 	int cols = SCREEN_WIDTH / CELL;
 
 	Stage *stage = init_stage(app, rows, cols);
@@ -50,7 +50,7 @@ int main() {
 		prepare_scene(app);
 
 		do_input(app, stage);
-
+		
         if (app->run == true) {
             if (logic_ticker == app->logic_tick || app->logic_tick == 0) {
                 app->delegate.logic(app, stage);
