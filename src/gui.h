@@ -5,14 +5,19 @@
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
 
+typedef struct options_t {
+	int radius;
+} Options;
+
 typedef struct _btn {
 	SDL_Rect rect;
+	Options opts;
 	SDL_Texture *texture;
 } Button;
 
 typedef struct _tb {
-    SDL_Rect rect;
-    SDL_Texture *texture;
+	SDL_Rect rect;
+	SDL_Texture *texture;
 } TextBox;
 
 typedef struct {
@@ -35,7 +40,6 @@ typedef struct {
 	SDL_Renderer *renderer;
 	TTF_Font *font;
 } DrawInfo;
-
 
 /**
  * Creates a new `Grid`. Returns NULL if failed.
@@ -82,7 +86,7 @@ void text_box_destroy(TextBox *tb);
 /**
  * Creates a new `Button`. Returns NULL if failed.
  * */
-Button *new_button(int x, int y);
+Button *new_button(int x, int y, Options opts);
 
 /**
  * Copies the text to the button struct. Returns the number

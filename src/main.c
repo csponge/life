@@ -30,7 +30,7 @@ static void cap_frame_rate(long *then, float *remainder) {
 	*then = SDL_GetTicks();
 }
 
-int main() {
+int main(void) {
 	long then;
 	float remainder;
 
@@ -44,20 +44,21 @@ int main() {
 	then = SDL_GetTicks();
 	remainder = 0;
 
-    int logic_ticker = 0;
+	int logic_ticker = 0;
 
 	while (1) {
 		prepare_scene(app);
 
 		do_input(app, stage);
-		
-        if (app->run == true) {
-            if (logic_ticker == app->logic_tick || app->logic_tick == 0) {
-                app->delegate.logic(app, stage);
-                logic_ticker = 0;
-            }
-            logic_ticker++;
-        }
+
+		if (app->run == true) {
+			if (logic_ticker == app->logic_tick ||
+			    app->logic_tick == 0) {
+				app->delegate.logic(app, stage);
+				logic_ticker = 0;
+			}
+			logic_ticker++;
+		}
 
 		app->delegate.draw(stage, app->renderer);
 

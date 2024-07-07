@@ -11,12 +11,12 @@
 typedef struct _App App;
 
 typedef struct {
-    Button *play_btn;
-    Button *pause_btn;
-    Button *seed_btn;
-    Button *dec_tick_btn;
-    Button *inc_tick_btn;
-    CellGrid *cell_grid;
+	Button *play_btn;
+	Button *pause_btn;
+	Button *seed_btn;
+	Button *dec_tick_btn;
+	Button *inc_tick_btn;
+	CellGrid *cell_grid;
 } Stage;
 
 typedef struct {
@@ -26,7 +26,7 @@ typedef struct {
 
 struct _App {
 	bool run;
-    int logic_tick;
+	int logic_tick;
 	SDL_Renderer *renderer;
 	TTF_Font *font;
 	SDL_Window *window;

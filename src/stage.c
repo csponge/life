@@ -84,8 +84,7 @@ void seed(CellGrid *grid) {
 		for (int col = 0; col < grid->cols; col++) {
 			int isAlive = rand() % (10 + 1);
 
-			grid->cells[row][col] =
-			    (Cell *)calloc(1, sizeof(Cell));
+			grid->cells[row][col] = (Cell *)calloc(1, sizeof(Cell));
 			if (isAlive <= 1) {
 				grid->cells[row][col]->alive = true;
 			} else {
@@ -121,21 +120,19 @@ void next_generation(CellGrid *grid) {
 	}
 
 	free_cells(grid->cells, grid->rows, grid->cols);
-    grid->cells = new_cells;
+	grid->cells = new_cells;
 }
 
 void draw(Stage *stage, SDL_Renderer *renderer) {
-    button_blit(stage->play_btn, renderer);
-    button_blit(stage->pause_btn, renderer);
-    button_blit(stage->seed_btn, renderer);
-    button_blit(stage->dec_tick_btn, renderer);
-    button_blit(stage->inc_tick_btn, renderer);
-    cell_grid_blit(stage->cell_grid, renderer);
+	button_blit(stage->play_btn, renderer);
+	/* button_blit(stage->pause_btn, renderer); */
+	/* button_blit(stage->seed_btn, renderer); */
+	/* button_blit(stage->dec_tick_btn, renderer); */
+	/* button_blit(stage->inc_tick_btn, renderer); */
+	cell_grid_blit(stage->cell_grid, renderer);
 }
 
-void logic(App *app, Stage *stage) {
-    next_generation(stage->cell_grid);
-}
+void logic(App *app, Stage *stage) { next_generation(stage->cell_grid); }
 
 void cell_grid_clicked(CellGrid *grid, int x, int y) {
 	int found_row = -1;
@@ -184,18 +181,18 @@ void mouse_click(App *app, Stage *stage, int x, int y) {
 
 	clicked = is_button_clicked(stage->seed_btn, x, y);
 	if (clicked) {
-        seed(stage->cell_grid);
+		seed(stage->cell_grid);
 	}
 
 	clicked = is_button_clicked(stage->dec_tick_btn, x, y);
 	if (clicked) {
-        if (app->logic_tick > 0)
-            app->logic_tick-=10;
+		if (app->logic_tick > 0)
+			app->logic_tick -= 10;
 	}
 
 	clicked = is_button_clicked(stage->inc_tick_btn, x, y);
 	if (clicked) {
-        app->logic_tick+=10;
+		app->logic_tick += 10;
 	}
 
 	clicked = is_cell_grid_clicked(stage->cell_grid, x, y);
@@ -211,26 +208,27 @@ Stage *init_stage(App *app, int rows, int cols) {
 	Stage *stage = calloc(1, sizeof(Stage));
 
 	DrawInfo info = {.renderer = app->renderer, .font = app->font};
+	Options opts = {.radius = 5};
 
-	Button *play = new_button(10, 10);
+	Button *play = new_button(10, 10, opts);
 	button_set_text(play, &info, "Play");
 	stage->play_btn = play;
 
-	Button *pause = new_button(80, 10);
+	Button *pause = new_button(80, 10, opts);
 	button_set_text(pause, &info, "Pause");
 	stage->pause_btn = pause;
 
-    Button *seed = new_button(170, 10);
-    button_set_text(seed, &info, "Seed");
-    stage->seed_btn = seed;
+	Button *seed = new_button(170, 10, opts);
+	button_set_text(seed, &info, "Seed");
+	stage->seed_btn = seed;
 
-    Button *dec_tick = new_button(245, 10);
-    button_set_text(dec_tick, &info, "Dec");
-    stage->dec_tick_btn = dec_tick;
+	Button *dec_tick = new_button(245, 10, opts);
+	button_set_text(dec_tick, &info, "Dec");
+	stage->dec_tick_btn = dec_tick;
 
-    Button *inc_tick = new_button(310, 10);
-    button_set_text(inc_tick, &info, "Inc");
-    stage->inc_tick_btn = inc_tick;
+	Button *inc_tick = new_button(310, 10, opts);
+	button_set_text(inc_tick, &info, "Inc");
+	stage->inc_tick_btn = inc_tick;
 
 	int cell_start = SCREEN_HEIGHT - (rows * CELL);
 	CellGrid *grid = new_cell_grid(rows, cols, 0, cell_start);
@@ -240,11 +238,11 @@ Stage *init_stage(App *app, int rows, int cols) {
 }
 
 void free_stage(Stage *stage) {
-    button_destroy(stage->play_btn);
-    button_destroy(stage->pause_btn);
-    button_destroy(stage->dec_tick_btn);
-    button_destroy(stage->inc_tick_btn);
-    cell_grid_destroy(stage->cell_grid);
+	button_destroy(stage->play_btn);
+	button_destroy(stage->pause_btn);
+	button_destroy(stage->dec_tick_btn);
+	button_destroy(stage->inc_tick_btn);
+	cell_grid_destroy(stage->cell_grid);
 
 	free(stage);
 	stage = NULL;

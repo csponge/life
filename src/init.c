@@ -26,7 +26,7 @@ App *init_app(void) {
 		return NULL;
 	}
 
-    app->logic_tick = 10;
+	app->logic_tick = 10;
 
 	app->window = SDL_CreateWindow("Life", SDL_WINDOWPOS_UNDEFINED,
 	                               SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH,
@@ -59,9 +59,9 @@ App *init_app(void) {
 		exit(1);
 	}
 
-    int renderStyle = TTF_STYLE_NORMAL;
-    TTF_SetFontStyle(app->font, renderStyle);
-    TTF_SetFontHinting(app->font, TTF_HINTING_MONO);
+	int renderStyle = TTF_STYLE_NORMAL;
+	TTF_SetFontStyle(app->font, renderStyle);
+	TTF_SetFontHinting(app->font, TTF_HINTING_MONO);
 
 	return app;
 }

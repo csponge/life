@@ -14,3 +14,7 @@
 [x] make elements clickable
 [ ] refactor logic to make it cleaner
 [ ] learn how to actually draw a button
+
+# Circle algorithm
+[x] Calculate the points before hand
+[ ] Shift points by the length of the button

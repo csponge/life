@@ -7,8 +7,45 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_video.h>
 
+struct CircleCenter {
+	int x;
+	int y;
+};
+
+float square(float n) { return n * n; }
+
 void draw_cell_grid(SDL_Renderer *renderer, void *grid);
 void destroy_cell_grid(void *cgrid);
+
+void button_plot_corner(SDL_Renderer *renderer, struct CircleCenter center,
+                        int x, int y) {
+	int x0 = center.x;
+	int y0 = center.y;
+
+	// octant 1
+	SDL_RenderDrawPoint(renderer, x0 + x, y0 - y);
+
+	// octant 2
+	SDL_RenderDrawPoint(renderer, x0 + y, y0 - x);
+
+	// octant 3
+	SDL_RenderDrawPoint(renderer, x0 + y, y0 + x);
+
+	// octant 4
+	SDL_RenderDrawPoint(renderer, x0 + x, y0 + y);
+
+	// octant 5
+	SDL_RenderDrawPoint(renderer, x0 - x, y0 + y);
+
+	// octant 6
+	SDL_RenderDrawPoint(renderer, x0 - y, y0 + x);
+
+	// octant 7
+	SDL_RenderDrawPoint(renderer, x0 - y, y0 - x);
+
+	// octant 8
+	SDL_RenderDrawPoint(renderer, x0 - x, y0 - y);
+}
 
 void button_blit(Button *btn, SDL_Renderer *renderer) {
 	int ret = 0;
@@ -20,27 +57,49 @@ void button_blit(Button *btn, SDL_Renderer *renderer) {
 		return;
 	}
 
-	ret = SDL_RenderDrawRect(renderer, &btn->rect);
-	if (ret != 0) {
-		SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
-		               SDL_LOG_PRIORITY_ERROR,
-		               "failed to draw button: %s", SDL_GetError());
-		return;
-	}
+	// find center point of button
+	struct CircleCenter center = {.x = (btn->rect.x + btn->rect.w) / 2,
+	                              .y = (btn->rect.y + btn->rect.h) / 2};
 
-	SDL_RenderCopy(renderer, btn->texture, NULL, &btn->rect);
+	// do circle calcutions
+	int rad = btn->opts.radius;
+	int y = rad;
+	int x = 0;
+
+	do {
+		button_plot_corner(renderer, center, x, y);
+		float mo = square(y - 0.5f) + square(x + 1);
+		float pk = mo - square(rad);
+
+		if (pk > 0) {
+			y--;
+		}
+		x++;
+	} while (x < y);
+
+	button_plot_corner(renderer, center, x, y);
+
+	/* ret = SDL_RenderDrawRect(renderer, &btn->rect); */
+	/* if (ret != 0) { */
+	/* 	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, */
+	/* 	               SDL_LOG_PRIORITY_ERROR, */
+	/* 	               "failed to draw button: %s", SDL_GetError()); */
+	/* 	return; */
+	/* } */
+
+	/* SDL_RenderCopy(renderer, btn->texture, NULL, &btn->rect); */
 }
 
-Button *new_button(int x, int y) {
+Button *new_button(int x, int y, Options opts) {
 	Button *btn = calloc(1, sizeof(Button));
 	if (btn != NULL) {
 		btn->rect.x = x;
 		btn->rect.y = y;
+		btn->opts = opts;
 	}
 
 	return btn;
 }
-
 
 int button_set_text(Button *btn, DrawInfo *info, char *text) {
 	SDL_Surface *text_surf = TTF_RenderUTF8_Solid(info->font, text, black);

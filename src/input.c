@@ -23,7 +23,7 @@ void do_key_up(App *app, SDL_KeyboardEvent *event) {
 }
 
 void do_mouse_down(App *app, Stage *stage, SDL_MouseButtonEvent *event) {
-    mouse_click(app, stage, event->x, event->y);
+	mouse_click(app, stage, event->x, event->y);
 }
 
 void do_input(App *app, Stage *stage) {
