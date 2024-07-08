@@ -17,4 +17,5 @@
 
 # Circle algorithm
 [x] Calculate the points before hand
-[ ] Shift points by the length of the button
+[x] Shift points by the length of the button
+[ ] Figure out how to handle click events in button

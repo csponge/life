@@ -18,33 +18,35 @@ void draw_cell_grid(SDL_Renderer *renderer, void *grid);
 void destroy_cell_grid(void *cgrid);
 
 void button_plot_corner(SDL_Renderer *renderer, struct CircleCenter center,
-                        int x, int y) {
+                        int w, int h, int x, int y) {
 	int x0 = center.x;
 	int y0 = center.y;
+	w = w / 2;
+	h = h / 2;
 
 	// octant 1
-	SDL_RenderDrawPoint(renderer, x0 + x, y0 - y);
+	SDL_RenderDrawPoint(renderer, w + x0 + x, y0 - y - h);
 
 	// octant 2
-	SDL_RenderDrawPoint(renderer, x0 + y, y0 - x);
+	SDL_RenderDrawPoint(renderer, w + x0 + y, y0 - x - h);
 
 	// octant 3
-	SDL_RenderDrawPoint(renderer, x0 + y, y0 + x);
+	SDL_RenderDrawPoint(renderer, w + x0 + y, h + y0 + x);
 
 	// octant 4
-	SDL_RenderDrawPoint(renderer, x0 + x, y0 + y);
+	SDL_RenderDrawPoint(renderer, w + x0 + x, h + y0 + y);
 
 	// octant 5
-	SDL_RenderDrawPoint(renderer, x0 - x, y0 + y);
+	SDL_RenderDrawPoint(renderer, x0 - x - w, h + y0 + y);
 
 	// octant 6
-	SDL_RenderDrawPoint(renderer, x0 - y, y0 + x);
+	SDL_RenderDrawPoint(renderer, x0 - y - w, h + y0 + x);
 
 	// octant 7
-	SDL_RenderDrawPoint(renderer, x0 - y, y0 - x);
+	SDL_RenderDrawPoint(renderer, x0 - y - w, y0 - x - h);
 
 	// octant 8
-	SDL_RenderDrawPoint(renderer, x0 - x, y0 - y);
+	SDL_RenderDrawPoint(renderer, x0 - x - w, y0 - y - h);
 }
 
 void button_blit(Button *btn, SDL_Renderer *renderer) {
@@ -58,8 +60,9 @@ void button_blit(Button *btn, SDL_Renderer *renderer) {
 	}
 
 	// find center point of button
-	struct CircleCenter center = {.x = (btn->rect.x + btn->rect.w) / 2,
-	                              .y = (btn->rect.y + btn->rect.h) / 2};
+	struct CircleCenter center = {
+	    .x = (btn->rect.x + (btn->rect.x + btn->rect.w)) / 2,
+	    .y = (btn->rect.y + (btn->rect.y + btn->rect.h)) / 2};
 
 	// do circle calcutions
 	int rad = btn->opts.radius;
@@ -67,7 +70,8 @@ void button_blit(Button *btn, SDL_Renderer *renderer) {
 	int x = 0;
 
 	do {
-		button_plot_corner(renderer, center, x, y);
+		button_plot_corner(renderer, center, btn->rect.w, btn->rect.h,
+		                   x, y);
 		float mo = square(y - 0.5f) + square(x + 1);
 		float pk = mo - square(rad);
 
@@ -77,7 +81,27 @@ void button_blit(Button *btn, SDL_Renderer *renderer) {
 		x++;
 	} while (x < y);
 
-	button_plot_corner(renderer, center, x, y);
+	button_plot_corner(renderer, center, btn->rect.w, btn->rect.h, x, y);
+
+	SDL_RenderDrawPoint(renderer, center.x, center.y);
+
+	int x1, y1, x2, y2;
+
+	x1 = center.x - (btn->rect.w / 2);
+	x2 = center.x + (btn->rect.w / 2);
+	y1 = y2 = center.y - ((btn->rect.h / 2) + rad);
+	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // top
+
+	y1 = y2 = center.y + ((btn->rect.h / 2) + rad);
+	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // bottom
+
+	x1 = x2 = center.x + (btn->rect.w / 2) + rad;
+	y1 = center.y - (btn->rect.h / 2);
+	y2 = center.y + (btn->rect.h / 2);
+	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // right
+
+    x1 = x2 = center.x - ((btn->rect.w / 2) + rad);
+	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // left
 
 	/* ret = SDL_RenderDrawRect(renderer, &btn->rect); */
 	/* if (ret != 0) { */

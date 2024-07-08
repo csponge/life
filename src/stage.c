@@ -129,7 +129,7 @@ void draw(Stage *stage, SDL_Renderer *renderer) {
 	/* button_blit(stage->seed_btn, renderer); */
 	/* button_blit(stage->dec_tick_btn, renderer); */
 	/* button_blit(stage->inc_tick_btn, renderer); */
-	cell_grid_blit(stage->cell_grid, renderer);
+	/*cell_grid_blit(stage->cell_grid, renderer);*/
 }
 
 void logic(App *app, Stage *stage) { next_generation(stage->cell_grid); }
@@ -208,9 +208,9 @@ Stage *init_stage(App *app, int rows, int cols) {
 	Stage *stage = calloc(1, sizeof(Stage));
 
 	DrawInfo info = {.renderer = app->renderer, .font = app->font};
-	Options opts = {.radius = 5};
+	Options opts = {.radius = 10};
 
-	Button *play = new_button(10, 10, opts);
+	Button *play = new_button(40, 40, opts);
 	button_set_text(play, &info, "Play");
 	stage->play_btn = play;
 
