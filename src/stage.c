@@ -208,9 +208,9 @@ Stage *init_stage(App *app, int rows, int cols) {
 	Stage *stage = calloc(1, sizeof(Stage));
 
 	DrawInfo info = {.renderer = app->renderer, .font = app->font};
-	Options opts = {.radius = 10};
+	Options opts = {.radius = 5};
 
-	Button *play = new_button(40, 40, opts);
+	Button *play = new_button(20, 20, opts);
 	button_set_text(play, &info, "Play");
 	stage->play_btn = play;
 

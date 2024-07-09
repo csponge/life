@@ -17,8 +17,8 @@ float square(float n) { return n * n; }
 void draw_cell_grid(SDL_Renderer *renderer, void *grid);
 void destroy_cell_grid(void *cgrid);
 
-void button_plot_corner(SDL_Renderer *renderer, struct CircleCenter center,
-                        int w, int h, int x, int y) {
+void button_plot_corners(SDL_Renderer *renderer, struct CircleCenter center,
+                         int w, int h, int x, int y) {
 	int x0 = center.x;
 	int y0 = center.y;
 	w = w / 2;
@@ -49,6 +49,27 @@ void button_plot_corner(SDL_Renderer *renderer, struct CircleCenter center,
 	SDL_RenderDrawPoint(renderer, x0 - x - w, y0 - y - h);
 }
 
+void button_draw_edges(SDL_Renderer *renderer, SDL_Rect rect,
+                       struct CircleCenter center, int rad) {
+	int x1, y1, x2, y2;
+
+	x1 = center.x - (rect.w / 2);
+	x2 = center.x + (rect.w / 2);
+	y1 = y2 = center.y - ((rect.h / 2) + rad);
+	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // top
+
+	y1 = y2 = center.y + ((rect.h / 2) + rad);
+	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // bottom
+
+	x1 = x2 = center.x + (rect.w / 2) + rad;
+	y1 = center.y - (rect.h / 2);
+	y2 = center.y + (rect.h / 2);
+	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // right
+
+	x1 = x2 = center.x - ((rect.w / 2) + rad);
+	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // left
+}
+
 void button_blit(Button *btn, SDL_Renderer *renderer) {
 	int ret = 0;
 	ret = SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
@@ -59,59 +80,46 @@ void button_blit(Button *btn, SDL_Renderer *renderer) {
 		return;
 	}
 
-	// find center point of button
-	struct CircleCenter center = {
-	    .x = (btn->rect.x + (btn->rect.x + btn->rect.w)) / 2,
-	    .y = (btn->rect.y + (btn->rect.y + btn->rect.h)) / 2};
-
-	// do circle calcutions
-	int rad = btn->opts.radius;
-	int y = rad;
-	int x = 0;
-
-	do {
-		button_plot_corner(renderer, center, btn->rect.w, btn->rect.h,
-		                   x, y);
-		float mo = square(y - 0.5f) + square(x + 1);
-		float pk = mo - square(rad);
-
-		if (pk > 0) {
-			y--;
+	// just draw a regular rectangle
+	if (btn->opts.radius < 1) {
+		ret = SDL_RenderDrawRect(renderer, &btn->rect);
+		if (ret != 0) {
+			SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION,
+			               SDL_LOG_PRIORITY_ERROR,
+			               "failed to draw button: %s",
+			               SDL_GetError());
+			return;
 		}
-		x++;
-	} while (x < y);
+	} else {
+		// find center point of button
+		struct CircleCenter center = {
+		    .x = (btn->rect.x + (btn->rect.x + btn->rect.w)) / 2,
+		    .y = (btn->rect.y + (btn->rect.y + btn->rect.h)) / 2};
 
-	button_plot_corner(renderer, center, btn->rect.w, btn->rect.h, x, y);
+		// do circle calcutions
+		int rad = btn->opts.radius;
+		int y = rad;
+		int x = 0;
 
-	SDL_RenderDrawPoint(renderer, center.x, center.y);
+		do {
+			button_plot_corners(renderer, center, btn->rect.w,
+			                    btn->rect.h, x, y);
+			float mo = square(y - 0.5f) + square(x + 1);
+			float pk = mo - square(rad);
 
-	int x1, y1, x2, y2;
+			if (pk > 0) {
+				y--;
+			}
+			x++;
+		} while (x < y);
 
-	x1 = center.x - (btn->rect.w / 2);
-	x2 = center.x + (btn->rect.w / 2);
-	y1 = y2 = center.y - ((btn->rect.h / 2) + rad);
-	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // top
+		button_plot_corners(renderer, center, btn->rect.w, btn->rect.h,
+		                    x, y);
 
-	y1 = y2 = center.y + ((btn->rect.h / 2) + rad);
-	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // bottom
+		button_draw_edges(renderer, btn->rect, center, rad);
+	}
 
-	x1 = x2 = center.x + (btn->rect.w / 2) + rad;
-	y1 = center.y - (btn->rect.h / 2);
-	y2 = center.y + (btn->rect.h / 2);
-	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // right
-
-    x1 = x2 = center.x - ((btn->rect.w / 2) + rad);
-	SDL_RenderDrawLine(renderer, x1, y1, x2, y2); // left
-
-	/* ret = SDL_RenderDrawRect(renderer, &btn->rect); */
-	/* if (ret != 0) { */
-	/* 	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, */
-	/* 	               SDL_LOG_PRIORITY_ERROR, */
-	/* 	               "failed to draw button: %s", SDL_GetError()); */
-	/* 	return; */
-	/* } */
-
-	/* SDL_RenderCopy(renderer, btn->texture, NULL, &btn->rect); */
+	SDL_RenderCopy(renderer, btn->texture, NULL, &btn->rect);
 }
 
 Button *new_button(int x, int y, Options opts) {

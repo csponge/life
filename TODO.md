@@ -19,3 +19,4 @@
 [x] Calculate the points before hand
 [x] Shift points by the length of the button
 [ ] Figure out how to handle click events in button
+[ ] Render text inside button
