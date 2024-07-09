@@ -51,16 +51,15 @@ int main(void) {
 
 		do_input(app, stage);
 
+		draw_stage(stage, app->renderer);
+
 		if (app->run == true) {
-			if (logic_ticker == app->logic_tick ||
-			    app->logic_tick == 0) {
-				app->delegate.logic(app, stage);
+			if (logic_ticker == app->logic_tick || app->logic_tick == 0) {
+				logic_stage(stage);
 				logic_ticker = 0;
 			}
 			logic_ticker++;
 		}
-
-		app->delegate.draw(stage, app->renderer);
 
 		present_scene(app);
 

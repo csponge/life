@@ -7,8 +7,6 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-int generation = 0;
-
 Cell ***initialize_cells(int rows, int cols) {
 	Cell ***cells = calloc(rows, sizeof(Cell *));
 	for (int row = 0; row < rows; row++) {
@@ -123,16 +121,16 @@ void next_generation(CellGrid *grid) {
 	grid->cells = new_cells;
 }
 
-void draw(Stage *stage, SDL_Renderer *renderer) {
+void draw_stage(Stage *stage, SDL_Renderer *renderer) {
 	button_blit(stage->play_btn, renderer);
-	/* button_blit(stage->pause_btn, renderer); */
-	/* button_blit(stage->seed_btn, renderer); */
-	/* button_blit(stage->dec_tick_btn, renderer); */
-	/* button_blit(stage->inc_tick_btn, renderer); */
-	/*cell_grid_blit(stage->cell_grid, renderer);*/
+	button_blit(stage->pause_btn, renderer);
+	button_blit(stage->seed_btn, renderer);
+	button_blit(stage->dec_tick_btn, renderer);
+	button_blit(stage->inc_tick_btn, renderer);
+	cell_grid_blit(stage->cell_grid, renderer);
 }
 
-void logic(App *app, Stage *stage) { next_generation(stage->cell_grid); }
+void logic_stage(Stage *stage) { next_generation(stage->cell_grid); }
 
 void cell_grid_clicked(CellGrid *grid, int x, int y) {
 	int found_row = -1;
@@ -166,7 +164,7 @@ void cell_grid_clicked(CellGrid *grid, int x, int y) {
 	}
 }
 
-void mouse_click(App *app, Stage *stage, int x, int y) {
+void mouse_click_stage(App *app, Stage *stage, int x, int y) {
 	bool clicked = false;
 
 	clicked = is_button_clicked(stage->play_btn, x, y);
@@ -202,9 +200,6 @@ void mouse_click(App *app, Stage *stage, int x, int y) {
 }
 
 Stage *init_stage(App *app, int rows, int cols) {
-	app->delegate.logic = logic;
-	app->delegate.draw = draw;
-
 	Stage *stage = calloc(1, sizeof(Stage));
 
 	DrawInfo info = {.renderer = app->renderer, .font = app->font};
@@ -214,19 +209,19 @@ Stage *init_stage(App *app, int rows, int cols) {
 	button_set_text(play, &info, "Play");
 	stage->play_btn = play;
 
-	Button *pause = new_button(80, 10, opts);
+	Button *pause = new_button(80, 20, opts);
 	button_set_text(pause, &info, "Pause");
 	stage->pause_btn = pause;
 
-	Button *seed = new_button(170, 10, opts);
+	Button *seed = new_button(170, 20, opts);
 	button_set_text(seed, &info, "Seed");
 	stage->seed_btn = seed;
 
-	Button *dec_tick = new_button(245, 10, opts);
+	Button *dec_tick = new_button(245, 20, opts);
 	button_set_text(dec_tick, &info, "Dec");
 	stage->dec_tick_btn = dec_tick;
 
-	Button *inc_tick = new_button(310, 10, opts);
+	Button *inc_tick = new_button(320, 20, opts);
 	button_set_text(inc_tick, &info, "Inc");
 	stage->inc_tick_btn = inc_tick;
 

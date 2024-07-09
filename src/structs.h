@@ -19,10 +19,11 @@ typedef struct {
 	CellGrid *cell_grid;
 } Stage;
 
-typedef struct {
-	void (*logic)(App *app, Stage *stage);
-	void (*draw)(Stage *stage, SDL_Renderer *renderer);
-} Delegate;
+typedef struct mouse_t {
+    bool down;
+    int x;
+    int y;
+} Mouse;
 
 struct _App {
 	bool run;
@@ -30,7 +31,6 @@ struct _App {
 	SDL_Renderer *renderer;
 	TTF_Font *font;
 	SDL_Window *window;
-	Delegate delegate;
 	int keyboard[MAX_KEYBOAD_KEYS];
 };
 
