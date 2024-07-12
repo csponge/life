@@ -203,25 +203,25 @@ Stage *init_stage(App *app, int rows, int cols) {
 	Stage *stage = calloc(1, sizeof(Stage));
 
 	DrawInfo info = {.renderer = app->renderer, .font = app->font};
-	Options opts = {.radius = 5};
+	Options opts = {.radius = 10};
 
 	Button *play = new_button(20, 20, opts);
 	button_set_text(play, &info, "Play");
 	stage->play_btn = play;
 
-	Button *pause = new_button(80, 20, opts);
+	Button *pause = new_button(100, 20, opts);
 	button_set_text(pause, &info, "Pause");
 	stage->pause_btn = pause;
 
-	Button *seed = new_button(170, 20, opts);
+	Button *seed = new_button(200, 20, opts);
 	button_set_text(seed, &info, "Seed");
 	stage->seed_btn = seed;
 
-	Button *dec_tick = new_button(245, 20, opts);
+	Button *dec_tick = new_button(290, 20, opts);
 	button_set_text(dec_tick, &info, "Dec");
 	stage->dec_tick_btn = dec_tick;
 
-	Button *inc_tick = new_button(320, 20, opts);
+	Button *inc_tick = new_button(365, 20, opts);
 	button_set_text(inc_tick, &info, "Inc");
 	stage->inc_tick_btn = inc_tick;
 

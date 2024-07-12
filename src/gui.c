@@ -1,6 +1,7 @@
 #include "gui.h"
 #include "common.h"
 #include "defs.h"
+#include "math.h"
 #include <SDL2/SDL_log.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
@@ -96,6 +97,10 @@ void button_blit(Button *btn, SDL_Renderer *renderer) {
 		    .x = (btn->rect.x + (btn->rect.x + btn->rect.w)) / 2,
 		    .y = (btn->rect.y + (btn->rect.y + btn->rect.h)) / 2};
 
+#ifdef DEBUG
+		SDL_RenderDrawPoint(renderer, center.x, center.y);
+#endif
+
 		// do circle calcutions
 		int rad = btn->opts.radius;
 		int y = rad;
@@ -118,6 +123,14 @@ void button_blit(Button *btn, SDL_Renderer *renderer) {
 
 		button_draw_edges(renderer, btn->rect, center, rad);
 	}
+
+#ifdef DEBUG
+	SDL_RenderDrawPoint(renderer, btn->rect.x, btn->rect.y);
+	SDL_RenderDrawPoint(renderer, btn->rect.x + btn->rect.w, btn->rect.y);
+	SDL_RenderDrawPoint(renderer, btn->rect.x + btn->rect.w,
+	                    btn->rect.y + btn->rect.h);
+	SDL_RenderDrawPoint(renderer, btn->rect.x, btn->rect.y + btn->rect.h);
+#endif
 
 	SDL_RenderCopy(renderer, btn->texture, NULL, &btn->rect);
 }
@@ -151,15 +164,74 @@ int button_set_text(Button *btn, DrawInfo *info, char *text) {
 }
 
 bool is_button_clicked(Button *btn, int x, int y) {
-	if (btn->rect.y > y || (btn->rect.y + btn->rect.h) < y) {
+	int rad = btn->opts.radius;
+	// find center point of button
+	struct CircleCenter center = {
+	    .x = (btn->rect.x + (btn->rect.x + btn->rect.w)) / 2,
+	    .y = (btn->rect.y + (btn->rect.y + btn->rect.h)) / 2};
+
+	// center rect check
+	if ((btn->rect.x <= x && x <= btn->rect.x + btn->rect.w) &&
+	    btn->rect.y <= y && y <= btn->rect.y + btn->rect.h) {
+		return true;
+	}
+
+	// check to make sure we have a rounded button
+	if (rad == 0) {
 		return false;
 	}
 
-	if (btn->rect.x > x || (btn->rect.x + btn->rect.w) < x) {
-		return false;
+	// rect 1 check
+	if ((x <= center.x - (btn->rect.w / 2) &&
+	     x >= center.x - (btn->rect.w / 2) - rad) &&
+	    (btn->rect.y <= y && y <= btn->rect.y + btn->rect.h)) {
+		return true;
 	}
 
-	return true;
+	// rect 2 check
+	if ((btn->rect.x <= x && x <= btn->rect.x + btn->rect.w) &&
+	    (y <= center.y - (btn->rect.h / 2) &&
+	     y >= center.y - (btn->rect.h / 2) - rad)) {
+		return true;
+	}
+
+	// rect 3
+	if ((x >= center.x + (btn->rect.w / 2) &&
+	     x <= center.x + (btn->rect.w / 2) + rad) &&
+	    (btn->rect.y <= y && y <= btn->rect.y + btn->rect.h)) {
+		return true;
+	}
+
+	// rect 4 check
+	if ((btn->rect.x <= x && x <= btn->rect.x + btn->rect.w) &&
+	    (y >= center.y + (btn->rect.h / 2) &&
+	     y <= center.y + (btn->rect.h / 2) + rad)) {
+		return true;
+	}
+
+	// corner checks
+	if (x >= btn->rect.x + btn->rect.w && y <= btn->rect.y) {
+		center.x = btn->rect.x + btn->rect.w;
+		center.y = btn->rect.y;
+	} else if (x >= btn->rect.x + btn->rect.w &&
+	           y >= btn->rect.y + btn->rect.h) {
+		center.x = btn->rect.x + btn->rect.w;
+		center.y = btn->rect.y + btn->rect.h;
+	} else if (x <= btn->rect.x && y >= btn->rect.y + btn->rect.h) {
+		center.x = btn->rect.x;
+		center.y = btn->rect.y + btn->rect.h;
+	} else if (x <= btn->rect.x && y <= btn->rect.y) {
+		center.x = btn->rect.x;
+		center.y = btn->rect.y;
+	}
+
+	// use distance formula to determine if point is inside quad
+	double d = sqrt(square(center.x - x) + square(center.y - y));
+	if (d <= rad) {
+		return true;
+	}
+
+	return false;
 }
 
 void button_destroy(Button *btn) {

@@ -18,5 +18,6 @@
 # Circle algorithm
 [x] Calculate the points before hand
 [x] Shift points by the length of the button
-[ ] Figure out how to handle click events in button with rounded corners
-[ ] Render text inside button
+[x] Figure out how to handle click events in button with rounded corners
+- Maybe shift the center point of the circle to the corner
+[x] Render text inside button
