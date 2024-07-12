@@ -5,6 +5,7 @@
 #define SCREEN_HEIGHT 720
 #define GRID_HEIGHT 650
 #define CELL 16
+#define LOGIC_TICK_INC 10
 #define MAX_KEYBOAD_KEYS 350
 
 #endif

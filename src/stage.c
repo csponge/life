@@ -1,3 +1,4 @@
+#include "stage.h"
 #include "structs.h"
 #include <SDL2/SDL_error.h>
 #include <SDL2/SDL_log.h>
@@ -164,6 +165,22 @@ void cell_grid_clicked(CellGrid *grid, int x, int y) {
 	}
 }
 
+void key_pressed_stage(App *app, Stage *stage, SDL_Scancode code) {
+    if (code == SDL_SCANCODE_R) {
+		app->run = true;
+	} else if (code == SDL_SCANCODE_P) {
+		app->run = false;
+    } else if (code == SDL_SCANCODE_S) {
+        seed(stage->cell_grid);
+	} else if (code == SDL_SCANCODE_I) {
+		if (app->logic_tick < 60)
+			app->logic_tick += LOGIC_TICK_INC;
+	} else if (code == SDL_SCANCODE_D) {
+		if (app->logic_tick > 0)
+			app->logic_tick -= LOGIC_TICK_INC;
+	}
+}
+
 void mouse_click_stage(App *app, Stage *stage, int x, int y) {
 	bool clicked = false;
 
@@ -185,12 +202,13 @@ void mouse_click_stage(App *app, Stage *stage, int x, int y) {
 	clicked = is_button_clicked(stage->dec_tick_btn, x, y);
 	if (clicked) {
 		if (app->logic_tick > 0)
-			app->logic_tick -= 10;
+			app->logic_tick -= LOGIC_TICK_INC;
 	}
 
 	clicked = is_button_clicked(stage->inc_tick_btn, x, y);
 	if (clicked) {
-		app->logic_tick += 10;
+        if (app->logic_tick < 60)
+            app->logic_tick += LOGIC_TICK_INC;
 	}
 
 	clicked = is_cell_grid_clicked(stage->cell_grid, x, y);

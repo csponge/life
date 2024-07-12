@@ -5,25 +5,16 @@
 #include <SDL2/SDL_log.h>
 #include <SDL2/SDL_scancode.h>
 
-void do_key_down(App *app, SDL_KeyboardEvent *event) {
-	/*if (event->repeat == 0 && event->keysym.scancode < MAX_KEYBOAD_KEYS)
-	 * {*/
-	/*  app->keyboard[event->keysym.scancode] = 1;*/
-	/*}*/
-	if (event->keysym.scancode == SDL_SCANCODE_R) {
-		app->run = true;
+void do_key_down(App *app, Stage *stage, SDL_KeyboardEvent *event) {
+	if (event->repeat > 0) {
+		return;
 	}
-}
 
-void do_key_up(App *app, SDL_KeyboardEvent *event) {
-	/*if (event->repeat == 0 && event->keysym.scancode < MAX_KEYBOAD_KEYS)
-	 * {*/
-	/*  app->keyboard[event->keysym.scancode] = 0;*/
-	/*}*/
+    key_pressed_stage(app, stage, event->keysym.scancode);
 }
 
 void do_mouse_down(App *app, Stage *stage, SDL_MouseButtonEvent *event) {
-    mouse_click_stage(app, stage, event->x, event->y);
+	mouse_click_stage(app, stage, event->x, event->y);
 }
 
 void input_do(App *app, Stage *stage) {
@@ -36,11 +27,7 @@ void input_do(App *app, Stage *stage) {
 			break;
 
 		case SDL_KEYDOWN:
-			do_key_down(app, &event.key);
-			break;
-
-		case SDL_KEYUP:
-			do_key_up(app, &event.key);
+			do_key_down(app, stage, &event.key);
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:

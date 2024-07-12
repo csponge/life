@@ -31,7 +31,6 @@ struct app_t {
 	SDL_Renderer *renderer;
 	TTF_Font *font;
 	SDL_Window *window;
-	int keyboard[MAX_KEYBOAD_KEYS];
 };
 
 #endif

@@ -9,10 +9,12 @@
 [x] refactor to make it easier to draw gui elements
 [x] play/pause buttons
 [x] Slow down frames
+[x] Add keybinds
 
 # GUI System
 [x] make elements clickable
 [x] learn how to actually draw a button
+[ ] make a grid system for positioning elements
 [ ] refactor logic to make it cleaner
 
 # Circle algorithm
