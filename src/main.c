@@ -49,7 +49,7 @@ int main(void) {
 	while (1) {
 		prepare_scene(app);
 
-		do_input(app, stage);
+		input_do(app, stage);
 
 		draw_stage(stage, app->renderer);
 

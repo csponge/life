@@ -26,7 +26,7 @@ void do_mouse_down(App *app, Stage *stage, SDL_MouseButtonEvent *event) {
     mouse_click_stage(app, stage, event->x, event->y);
 }
 
-void do_input(App *app, Stage *stage) {
+void input_do(App *app, Stage *stage) {
 	SDL_Event event;
 
 	while (SDL_PollEvent(&event)) {

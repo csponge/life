@@ -3,6 +3,6 @@
 
 #include "structs.h"
 
-void do_input(App *app, Stage *stage);
+void input_do(App *app, Stage *stage);
 
 #endif

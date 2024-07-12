@@ -9,24 +9,24 @@ typedef struct options_t {
 	int radius;
 } Options;
 
-typedef struct _btn {
+typedef struct button_t {
 	SDL_Rect rect;
 	Options opts;
 	SDL_Texture *texture;
 } Button;
 
-typedef struct _tb {
+typedef struct text_box_t {
 	SDL_Rect rect;
 	SDL_Texture *texture;
 } TextBox;
 
-typedef struct {
+typedef struct cell_t {
 	bool alive;
 	float x;
 	float y;
 } Cell;
 
-typedef struct {
+typedef struct cell_grid_t {
 	int x;
 	int y;
 	int rows;
@@ -36,7 +36,7 @@ typedef struct {
 	Cell ***cells;
 } CellGrid;
 
-typedef struct {
+typedef struct draw_info_t {
 	SDL_Renderer *renderer;
 	TTF_Font *font;
 } DrawInfo;

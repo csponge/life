@@ -12,8 +12,8 @@
 
 # GUI System
 [x] make elements clickable
+[x] learn how to actually draw a button
 [ ] refactor logic to make it cleaner
-[ ] learn how to actually draw a button
 
 # Circle algorithm
 [x] Calculate the points before hand

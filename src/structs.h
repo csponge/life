@@ -8,9 +8,9 @@
 #include <SDL2/SDL_ttf.h>
 #include <stdbool.h>
 
-typedef struct _App App;
+typedef struct app_t App;
 
-typedef struct {
+typedef struct stage_t {
 	Button *play_btn;
 	Button *pause_btn;
 	Button *seed_btn;
@@ -25,7 +25,7 @@ typedef struct mouse_t {
     int y;
 } Mouse;
 
-struct _App {
+struct app_t {
 	bool run;
 	int logic_tick;
 	SDL_Renderer *renderer;
