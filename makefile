@@ -1,5 +1,5 @@
 life : main.o stage.o gui.o input.o init.o draw.o
-	cc -lm -lSDL2 -lSDL2_image -lSDL2_ttf -o ./build/life ./build/main.o ./build/stage.o ./build/gui.o ./build/input.o ./build/init.o ./build/draw.o
+	cc -o ./build/life ./build/main.o ./build/stage.o ./build/gui.o ./build/input.o ./build/init.o ./build/draw.o -lm -lSDL2 -lSDL2_image -lSDL2_ttf 
 
 main.o : ./src/main.c 
 	cc -g -c ./src/main.c -o ./build/main.o
